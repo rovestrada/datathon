@@ -13,6 +13,8 @@ from services.screen_loader import load_screen_data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # En Railway, los perfiles están un nivel arriba de 'api/' si el Root es 'api'
+    # o en '../mock' si arrancamos desde 'api/'
     load_profiles()
     load_screen_data()
     yield
@@ -25,6 +27,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Orígenes permitidos: leer de variable de entorno en producción
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:5173,http://localhost:5174"
@@ -33,6 +36,7 @@ ALLOWED_ORIGINS = os.getenv(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -43,14 +47,11 @@ app.include_router(chat.router)
 app.include_router(screens.router)
 
 
-@app.get("/health", tags=["infra"])
+@app.get("/")
+def read_root():
+    return {"status": "Havi API is running"}
+
+
+@app.get("/health")
 def health():
-    return {"status": "ok"}
-
-
-@app.post("/admin/reload", tags=["infra"])
-def reload_profiles():
-    """Recarga perfiles y datos de pantalla sin reiniciar."""
-    load_profiles()
-    load_screen_data()
-    return {"status": "reloaded"}
+    return {"status": "ok", "environment": os.getenv("RAILWAY_ENVIRONMENT", "local")}
