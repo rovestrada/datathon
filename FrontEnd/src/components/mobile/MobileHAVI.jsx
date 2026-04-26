@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Mic } from 'lucide-react'
+import HaviLogo from '../HaviLogo'
 
 const BOT_RESPONSES = [
   'Entendido. ¿En qué más puedo ayudarte?',
@@ -109,7 +110,7 @@ export default function MobileHAVI({ customerId, onBack }) {
           ‹
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontWeight: 700, fontSize: '16px', color: 'white' }}>HAVI</span>
+          <HaviLogo size={26} />
           <ChevronDown size={14} color="#9ca3af" />
         </div>
       </div>

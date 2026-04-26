@@ -9,15 +9,16 @@ const MARGIN = 6
 const PET_W = 64   // display size (upscaled 2×)
 const PET_H = 64
 
-function homeTopY() { return window.innerHeight - NAV_H - MARGIN - PET_H }
-function freeTopY()  { return Math.floor(Math.random() * (window.innerHeight - 220)) + 90 }
+function bottomY(navVisible) {
+  return window.innerHeight - (navVisible ? NAV_H : 0) - MARGIN - PET_H
+}
 
-const NavPet = memo(function NavPet({ petType = 'panda', petVariant, freeRoam = false, onPress }) {
+const NavPet = memo(function NavPet({ petType = 'panda', petVariant, navVisible = true, paused = false, onPress }) {
   const typeMeta = PET_TYPES[petType] || PET_TYPES.panda
   const variant  = petVariant || typeMeta.defaultVariant
 
   const [x,       setX]       = useState(40)
-  const [topY,    setTopY]    = useState(() => homeTopY())
+  const [topY,    setTopY]    = useState(() => bottomY(navVisible))
   const [anim,    setAnim]    = useState('walk')  // 'walk' | 'idle' | 'run'
   const [facingR, setFacingR] = useState(true)
   const [visible, setVisible] = useState(true)
@@ -27,11 +28,22 @@ const NavPet = memo(function NavPet({ petType = 'panda', petVariant, freeRoam = 
   const facingRef = useRef(true)
   const stepsRef  = useRef(0)
   const idleRef   = useRef(0)
+  const pausedRef = useRef(paused)
   facingRef.current = facingR
+  pausedRef.current = paused
+
+  // Freeze/unfreeze pet when paused changes
+  useEffect(() => {
+    if (paused) {
+      setAnim('idle')
+    } else if (!tpRef.current) {
+      setAnim('walk')
+    }
+  }, [paused])
 
   useEffect(() => {
-    if (!freeRoam && !tpRef.current) setTopY(homeTopY())
-  }, [freeRoam])
+    if (!tpRef.current) setTopY(bottomY(navVisible))
+  }, [navVisible])
 
   const teleport = useCallback(() => {
     if (tpRef.current) return
@@ -40,7 +52,7 @@ const NavPet = memo(function NavPet({ petType = 'panda', petVariant, freeRoam = 
     setVisible(false)
     setTimeout(() => {
       setX(Math.floor(Math.random() * (window.innerWidth - PET_W - 20)) + 10)
-      setTopY(freeRoam ? freeTopY() : homeTopY())
+      setTopY(bottomY(navVisible))
       setFacingR(Math.random() > 0.5)
       stepsRef.current = 0
       fallRef.current = true
@@ -49,12 +61,13 @@ const NavPet = memo(function NavPet({ petType = 'panda', petVariant, freeRoam = 
       setAnim('walk')
       setTimeout(() => { fallRef.current = false; tpRef.current = false }, 900)
     }, 320)
-  }, [freeRoam])
+  }, [navVisible])
 
   // 8fps game loop — position only (GIF handles its own frame animation)
   useEffect(() => {
     const iv = setInterval(() => {
       if (tpRef.current) return
+      if (pausedRef.current) return
 
       if (anim === 'idle') {
         idleRef.current++

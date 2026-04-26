@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import HaviLogo from '../HaviLogo'
 
 // Per-screen HAVI suggestions
 const SUGGESTIONS = {
@@ -8,11 +9,11 @@ const SUGGESTIONS = {
   transferir: 'Puedo ayudarte a hacer una transferencia SPEI sin comisiones. ¿A quién le vas a enviar?',
   buzon: 'Tienes notificaciones pendientes. ¿Quieres que te resuma las más importantes?',
   ajustes: '¿Necesitas bloquear tu tarjeta de emergencia? Puedo guiarte en segundos.',
-  salud: 'Tu salud financiera es buena. Te recomiendo activar el plan de ahorro Plus para mejorar tu rendimiento.',
-  estado: 'Detecté que no tienes gastos registrados este mes. ¡Ideal para mover saldo a ahorro y ganar más rendimiento!',
+  salud: 'Con tu ritmo de ahorro actual llegarás a $100 MXN en ~3 meses. ¿Quieres activar el redondeo automático para acelerar tu meta?',
+  estado: 'Tu cuenta no registra gastos este mes. ¡Excelente! Considera mover parte de tu saldo a ahorro inmediato para generar más rendimiento.',
 }
 
-export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px' }) {
+export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', thoughtBubble = false, onDismiss }) {
   const [visible, setVisible] = useState(false)
   const suggestion = SUGGESTIONS[screen]
 
@@ -41,6 +42,14 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px' }
             zIndex: 40,
           }}
         >
+          {/* Thought-bubble tail: three circles pointing toward the pet at the bottom */}
+          {thoughtBubble && (
+            <div style={{ display: 'flex', gap: '3px', paddingLeft: '20px', marginBottom: '5px', alignItems: 'flex-end' }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#1e1040', border: '1px solid #a78bfa44' }} />
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#1e1040', border: '1px solid #a78bfa44' }} />
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1e1040', border: '1px solid #a78bfa44' }} />
+            </div>
+          )}
           <div style={{
             background: '#1e1040',
             border: '1px solid #a78bfa44',
@@ -53,15 +62,15 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px' }
             <button
               onClick={onOpenHAVI}
               style={{
-                width: '36px', height: '36px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #7c3aed, #22d3ee)',
+                width: '34px', height: '34px', borderRadius: '8px',
+                background: 'none',
                 border: 'none', cursor: 'pointer', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '16px',
+                padding: 0,
               }}
               aria-label="Abrir HAVI"
             >
-              🏛
+              <HaviLogo size={30} />
             </button>
             <div style={{ flex: 1 }}>
               <p style={{
@@ -85,7 +94,7 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px' }
               </button>
             </div>
             <button
-              onClick={() => setVisible(false)}
+              onClick={() => { setVisible(false); onDismiss?.() }}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', flexShrink: 0 }}
               aria-label="Cerrar sugerencia"
             >

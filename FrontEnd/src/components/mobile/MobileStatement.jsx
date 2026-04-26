@@ -117,27 +117,7 @@ export default function MobileStatement({ onBack, onOpenHAVI }) {
         )}
       </div>
 
-      {/* HAVI tip */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        onClick={onOpenHAVI}
-        style={{
-          margin: '16px 20px 100px',
-          background: '#1e1040', border: '1px solid #a78bfa44',
-          borderRadius: '14px', padding: '16px',
-          display: 'flex', gap: '12px', alignItems: 'flex-start', cursor: 'pointer',
-        }}
-      >
-        <span style={{ fontSize: '20px' }}>🏛</span>
-        <div>
-          <p style={{ margin: '0 0 4px', fontSize: '11px', color: '#a78bfa', fontWeight: 600, letterSpacing: '0.5px' }}>HAVI analiza</p>
-          <p style={{ margin: 0, fontSize: '13px', color: '#e5e7eb', lineHeight: 1.5 }}>
-            Tu cuenta no registra gastos este mes. ¡Excelente! Considera mover parte de tu saldo a ahorro inmediato para generar más rendimiento.
-          </p>
-        </div>
-      </motion.div>
+      <div style={{ marginBottom: '100px' }} />
     </div>
   )
 }

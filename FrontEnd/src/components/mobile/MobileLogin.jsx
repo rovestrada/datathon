@@ -1,12 +1,58 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { EyeOff } from 'lucide-react'
+import HaviLogo from '../HaviLogo'
+
+const SLIDES = [
+  {
+    tag: 'Rendimientos',
+    title: 'Tu dinero trabaja mientras duermes',
+    body: 'Hey banco te ofrece hasta 15% anual en ahorro inmediato, sin plazos forzosos ni comisiones ocultas.',
+    gradient: 'linear-gradient(135deg, #1e1040 0%, #2d1b69 100%)',
+    accent: '#a78bfa',
+  },
+  {
+    tag: 'Sin comisiones',
+    title: 'Transferencias SPEI gratis las 24 hrs',
+    body: 'Envía dinero a cualquier banco de México en segundos, sin costo y sin límite de operaciones al día.',
+    gradient: 'linear-gradient(135deg, #0a2a1a 0%, #0d4a2a 100%)',
+    accent: '#34d399',
+  },
+  {
+    tag: 'Tarjeta Hey',
+    title: 'Cashback en cada compra',
+    body: 'Recibe de vuelta un porcentaje en cada transacción con tu Tarjeta de Crédito Hey. Úsala en línea o en tienda.',
+    gradient: 'linear-gradient(135deg, #1a0a2a 0%, #3b0764 100%)',
+    accent: '#e879f9',
+  },
+  {
+    tag: 'HAVI IA',
+    title: 'Tu asistente financiero inteligente',
+    body: 'HAVI analiza tus finanzas en tiempo real, te avisa de oportunidades y te ayuda a alcanzar tus metas más rápido.',
+    gradient: 'linear-gradient(135deg, #0a1a2a 0%, #1e3a5a 100%)',
+    accent: '#38bdf8',
+  },
+  {
+    tag: 'Seguridad',
+    title: 'Bloquea tu tarjeta en un tap',
+    body: 'Si pierdes tu tarjeta o ves algo sospechoso, bloquéala al instante desde la app y desbloquéala cuando quieras.',
+    gradient: 'linear-gradient(135deg, #1a0a0a 0%, #4a1a1a 100%)',
+    accent: '#f87171',
+  },
+]
 
 export default function MobileLogin() {
   const { login } = useAuth()
   const [value, setValue] = useState('')
   const [loading, setLoading] = useState(false)
+  const [slideIdx, setSlideIdx] = useState(0)
+
+  // Advance slide every 60 seconds
+  useEffect(() => {
+    const iv = setInterval(() => setSlideIdx(i => (i + 1) % SLIDES.length), 60_000)
+    return () => clearInterval(iv)
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -28,14 +74,14 @@ export default function MobileLogin() {
     }}>
       {/* Top section */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '48px 28px 0' }}>
-        {/* Masked name placeholder */}
+        {/* Welcome title */}
         <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          style={{ fontSize: '26px', fontWeight: 700, color: 'white', margin: '0 0 32px', letterSpacing: '2px' }}
+          style={{ fontSize: '22px', fontWeight: 700, color: 'white', margin: '0 0 32px' }}
         >
-          B******* S********* A***** R****
+          Bienvenido/a a HeyBanco
         </motion.p>
 
         {/* Password input */}
@@ -99,27 +145,64 @@ export default function MobileLogin() {
         </motion.form>
       </div>
 
-      {/* Promo banner */}
+      {/* HAVI info slideshow */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        style={{
-          margin: '0 0 16px',
-          background: 'linear-gradient(135deg, #c05e10 0%, #e07820 100%)',
-          padding: '24px 20px',
-          display: 'flex', flexDirection: 'column', gap: '8px',
-        }}
+        style={{ margin: '0 0 16px', padding: '0 16px' }}
       >
-        <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.7)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-          Súper<em style={{ fontStyle: 'italic', fontWeight: 700 }}>cashback</em>
-        </p>
-        <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.85)' }}>
-          Regístrate en el buzón de tu app y recibe 10% de vuelta.
-        </p>
-        <p style={{ margin: 0, fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>
-          *Válido con la anualidad de tu Tarjeta de Crédito Hey.
-        </p>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={slideIdx}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            style={{
+              background: SLIDES[slideIdx].gradient,
+              borderRadius: '20px',
+              padding: '20px',
+              border: `1px solid ${SLIDES[slideIdx].accent}33`,
+              boxShadow: `0 8px 32px ${SLIDES[slideIdx].accent}18`,
+            }}
+          >
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <HaviLogo size={28} />
+              <span style={{
+                fontSize: '10px', fontWeight: 700, letterSpacing: '1px',
+                textTransform: 'uppercase', color: SLIDES[slideIdx].accent,
+              }}>
+                {SLIDES[slideIdx].tag}
+              </span>
+            </div>
+            <p style={{ margin: '0 0 8px', fontSize: '15px', fontWeight: 700, color: 'white', lineHeight: 1.35 }}>
+              {SLIDES[slideIdx].title}
+            </p>
+            <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.55 }}>
+              {SLIDES[slideIdx].body}
+            </p>
+            {/* Dot indicators */}
+            <div style={{ display: 'flex', gap: '5px', marginTop: '14px' }}>
+              {SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSlideIdx(i)}
+                  style={{
+                    width: i === slideIdx ? '18px' : '6px',
+                    height: '6px',
+                    borderRadius: '3px',
+                    background: i === slideIdx ? SLIDES[slideIdx].accent : 'rgba(255,255,255,0.2)',
+                    border: 'none', cursor: 'pointer', padding: 0,
+                    transition: 'all 0.3s',
+                  }}
+                  aria-label={`Slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
 
       {/* Continue button at bottom */}

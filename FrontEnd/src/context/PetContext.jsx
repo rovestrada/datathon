@@ -7,6 +7,7 @@ const DEFAULTS = {
   petEnabled:  true,
   petType:     'panda',
   petVariant:  'black',
+  cardSkin:    true,
 }
 
 export function PetProvider({ children }) {

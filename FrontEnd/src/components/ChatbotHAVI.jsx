@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Send, Landmark, Loader2 } from 'lucide-react'
+import { X, Send, Loader2 } from 'lucide-react'
+import HaviLogo from './HaviLogo'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -169,8 +170,8 @@ const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId }) {
             <div className="flex items-center gap-3 px-4 py-3 flex-shrink-0"
               style={{ background: '#111', borderBottom: '1px solid #1a1a1a' }}>
               <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: '#1a1040', border: '1px solid #a78bfa44' }}>
-                <Landmark size={16} color="#a78bfa" />
+                style={{ background: '#3c4150', border: '1px solid #a78bfa22' }}>
+                <HaviLogo size={28} />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">HAVI</p>

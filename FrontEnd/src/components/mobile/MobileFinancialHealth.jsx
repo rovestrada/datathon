@@ -111,27 +111,7 @@ export default function MobileFinancialHealth({ onBack, onOpenHAVI }) {
               ))}
             </div>
 
-            {/* HAVI recommendation */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              onClick={onOpenHAVI}
-              style={{
-                background: '#1e1040', border: '1px solid #a78bfa44',
-                borderRadius: '14px', padding: '16px',
-                display: 'flex', gap: '12px', alignItems: 'flex-start',
-                cursor: 'pointer',
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>🏛</span>
-              <div>
-                <p style={{ margin: '0 0 4px', fontSize: '11px', color: '#a78bfa', fontWeight: 600, letterSpacing: '0.5px' }}>HAVI recomienda</p>
-                <p style={{ margin: 0, fontSize: '13px', color: '#e5e7eb', lineHeight: 1.5 }}>
-                  Con tu ritmo de ahorro actual llegarás a $100 MXN en ~3 meses. ¿Quieres activar el redondeo automático para acelerar tu meta?
-                </p>
-              </div>
-            </motion.div>
+
           </motion.div>
         )}
 

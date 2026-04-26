@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Home, CreditCard, ArrowLeftRight, Inbox } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
@@ -14,9 +14,14 @@ import MobileStatement from './MobileStatement'
 import MobilePetCustomization from './MobilePetCustomization'
 import HaviBubble from './HaviBubble'
 import NavPet from './NavPet'
+import HaviLogo from '../HaviLogo'
 
 // Screens that hide bottom nav AND the pet
 const FULL_SCREENS = ['havi', 'ajustes', 'mascota']
+// Screens that show the bottom nav bar
+const NAV_SCREENS  = ['inicio', 'pagos', 'transferir', 'buzon']
+// Screens with no nav, no full-screen modal (pet walks at actual bottom)
+const FREE_SCREENS = ['salud', 'estado']
 
 const NAV_TABS = [
   { id: 'inicio', label: 'Inicio', icon: Home },
@@ -30,18 +35,27 @@ export default function MobileApp() {
   const { petEnabled, petType, petVariant } = usePet()
   const [screen, setScreen] = useState('inicio')
   const [prevScreen, setPrevScreen] = useState(null)
+  const [petPaused, setPetPaused] = useState(false)
+
+  // Pause pet whenever entering a free screen; bubble dismiss will unpause
+  useEffect(() => {
+    if (FREE_SCREENS.includes(screen)) setPetPaused(true)
+  }, [screen])
 
   const goTo = (s) => { setPrevScreen(screen); setScreen(s) }
   const goBack = () => { setScreen(prevScreen || 'inicio'); setPrevScreen(null) }
 
   // Visibility logic
+  const isNavScreen   = NAV_SCREENS.includes(screen)    // has bottom nav bar
   const isFullScreen  = FULL_SCREENS.includes(screen)   // no pet, no nav
-  const isHomeScreen  = screen === 'inicio'
-  const isFreeRoam    = !isFullScreen && !isHomeScreen   // pet roams freely
-  const showBottomNav = isHomeScreen                     // nav only on home
-  const showPet       = petEnabled && !isFullScreen
-  const showHAVICorner = !petEnabled && !isFullScreen && !isHomeScreen
-  const showBubble    = !isFullScreen && !isHomeScreen
+  const isFreeScreen  = FREE_SCREENS.includes(screen)   // salud / estado
+  const showBottomNav = isNavScreen
+  // Pet visible on home (above nav) and on secondary screens (at actual bottom)
+  const showPet        = petEnabled && (screen === 'inicio' || isFreeScreen)
+  const petNavVisible  = screen === 'inicio'             // tells NavPet to sit above nav
+  const showHAVICorner = !petEnabled && isFreeScreen
+  const showBubble     = !isFullScreen
+  const thoughtBubble  = isFreeScreen
 
   if (!isAuthenticated) {
     return <MobileLogin />
@@ -77,21 +91,24 @@ export default function MobileApp() {
         </motion.div>
       </AnimatePresence>
 
-      {/* HAVI suggestion bubble — above pet level when in free-roam sections */}
+      {/* HAVI suggestion bubble */}
       {showBubble && (
         <HaviBubble
           screen={screen}
           onOpenHAVI={() => goTo('havi')}
-          bottomOffset={isFreeRoam ? '24px' : '88px'}
+          bottomOffset={isNavScreen ? '88px' : '82px'}
+          thoughtBubble={thoughtBubble && petEnabled}
+          onDismiss={isFreeScreen ? () => setPetPaused(false) : undefined}
         />
       )}
 
-      {/* Pixel art pet */}
+      {/* Pet — above nav on home; at actual screen bottom on secondary screens */}
       {showPet && (
         <NavPet
           petType={petType}
           petVariant={petVariant}
-          freeRoam={isFreeRoam}
+          navVisible={petNavVisible}
+          paused={isFreeScreen && petPaused}
           onPress={() => goTo('havi')}
         />
       )}
@@ -115,11 +132,11 @@ export default function MobileApp() {
           }}
           aria-label="Abrir HAVI"
         >
-          <span style={{ fontSize: '9px', fontWeight: 800, color: '#a78bfa', letterSpacing: '0.5px' }}>HAVI</span>
+          <HaviLogo size={32} />
         </motion.button>
       )}
 
-      {/* Bottom nav — only on home screen */}
+      {/* Bottom nav — on all 4 main tabs */}
       {showBottomNav && (
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
