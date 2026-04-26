@@ -13,7 +13,7 @@ function now() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-export default function MobileHAVI({ customerId, userName, token, chatOpenData, petEnabled, petType, petVariant, onBack, onNavigate }) {
+export default function MobileHAVI({ customerId, userName, token, chatOpenData, petEnabled, petType, petVariant, originScreen = 'inicio', onBack, onNavigate }) {
   const sessionId = useRef(crypto.randomUUID())
   const [ctasDone, setCtasDone] = useState(false)
 
@@ -61,7 +61,7 @@ export default function MobileHAVI({ customerId, userName, token, chatOpenData, 
           user_id: customerId, 
           session_id: sessionId.current, 
           message: text,
-          current_screen: 'havi'
+          current_screen: originScreen
         }),
       })
       const data = await res.json()

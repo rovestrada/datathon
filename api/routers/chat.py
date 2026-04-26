@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Header, Query
 from schemas.models import ChatOpenResponse, ChatMessageRequest, ChatMessageResponse
 from services.profile_loader import get_profile, decode_token
-from services.chat_service import get_chat_reply
+from services.chat_service import get_chat_reply, get_session_memory
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -45,15 +45,29 @@ def chat_message(
     authorization: str | None = Header(None),
 ):
     """
-    Turno de conversación con Havi. Mantiene historial por session_id en memoria.
-    El system prompt incluye el perfil completo del usuario y el contexto de la pantalla.
+    Turno de conversación con Havi. Mantiene historial + memoria acumulada por session_id.
+    El system prompt incluye perfil ML, screen context enriquecido, datos cross-screen y
+    la memoria estructurada extraída de la conversación.
     """
     _resolve_token(authorization)
     reply, nav_action = get_chat_reply(
         req.user_id, req.session_id, req.message, req.current_screen
     )
     return ChatMessageResponse(
-        reply=reply, 
+        reply=reply,
         session_id=req.session_id,
-        navigation_action=nav_action
+        navigation_action=nav_action,
     )
+
+
+@router.get("/session/{session_id}/memory")
+def get_memory(session_id: str, authorization: str | None = Header(None)):
+    """
+    Debug: retorna la memoria acumulada de una sesión en tiempo real.
+    Muestra qué metas, preferencias y decisiones ha registrado HAVI del usuario.
+    """
+    _resolve_token(authorization)
+    memory = get_session_memory(session_id)
+    if not memory:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    return memory

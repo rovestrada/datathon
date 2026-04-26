@@ -202,7 +202,7 @@ export default function MobileApp() {
           {screen === 'transferir' && <MobileTransferir customerId={customerId} onBack={goBack} />}
           {screen === 'buzon'      && <MobileBuzon onBack={goBack} />}
           {screen === 'cards'      && <MobileCards onBack={goBack} />}
-          {screen === 'havi'       && <MobileHAVI customerId={customerId} userName={userName} token={token} chatOpenData={chatOpenData} petEnabled={petEnabled} petType={petType} petVariant={petVariant} onBack={goBack} onNavigate={goTo} />}
+          {screen === 'havi'       && <MobileHAVI customerId={customerId} userName={userName} token={token} chatOpenData={chatOpenData} petEnabled={petEnabled} petType={petType} petVariant={petVariant} originScreen={prevScreen || 'inicio'} onBack={goBack} onNavigate={goTo} />}
           {screen === 'ajustes'    && <MobileSettings onBack={goBack} onNavigate={goTo} />}
           {screen === 'salud'      && <MobileFinancialHealth onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
           {screen === 'estado'     && <MobileStatement onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
