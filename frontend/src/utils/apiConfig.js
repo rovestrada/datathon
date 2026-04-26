@@ -1,3 +1,7 @@
-// En producción: VITE_API_URL debe ser la URL del servicio 'havi-api' en Railway
-// En desarrollo: el proxy de Vite se encarga de redirigir /api
-export const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const PROD_API_URL = 'https://havi-api-production.up.railway.app'
+
+// En desarrollo usamos el proxy de Vite (/api).
+// En producción evitamos caer a /api porque el static server responde index.html.
+export const API_BASE = import.meta.env.VITE_API_URL || (
+  import.meta.env.PROD ? PROD_API_URL : '/api'
+)
