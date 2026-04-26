@@ -9,13 +9,24 @@ import MobileLogin from './MobileLogin'
 import MobileHome from './MobileHome'
 import MobileHAVI from './MobileHAVI'
 import MobileSettings from './MobileSettings'
-import { MobilePagos, MobileTransferir, MobileBuzon, MobileCards } from './MobileScreens'
+import { MobilePagos, MobileTransferir, MobileBuzon, MobileCards, MobileProfile } from './MobileScreens'
 import MobileFinancialHealth from './MobileFinancialHealth'
 import MobileStatement from './MobileStatement'
 import MobilePetCustomization from './MobilePetCustomization'
 import HaviBubble from './HaviBubble'
 import NavPet from './NavPet'
 import HaviLogo from '../HaviLogo'
+
+// Map from Spanish nav screen names to English API/cache keys
+const SCREEN_API_MAP = {
+  inicio: 'home',
+  salud: 'health',
+  estado: 'statement',
+  pagos: 'payments',
+  buzon: 'inbox',
+  cards: 'cards',
+  transferir: 'transfers',
+}
 
 // Screens that hide bottom nav AND the pet
 const FULL_SCREENS = ['havi', 'ajustes', 'mascota']
@@ -118,20 +129,24 @@ export default function MobileApp() {
 
   // Cargar datos de la pantalla desde el backend
   const loadScreenData = async (screenId) => {
-    if (screenCache[screenId]) return
+    const apiId = SCREEN_API_MAP[screenId] ?? screenId
+    if (screenCache[apiId]) return
     try {
-      const res = await fetch(`/api/screen/${screenId}?user_id=${customerId}`, {
+      const res = await fetch(`/api/screen/${apiId}?user_id=${customerId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      if (res.ok) cacheScreenData(screenId, await res.json())
+      if (res.ok) cacheScreenData(apiId, await res.json())
     } catch (e) {
-      console.warn(`Error cargando screen:${screenId}`, e)
+      console.warn(`Error cargando screen:${apiId}`, e)
     }
   }
 
   useEffect(() => {
-    if (isAuthenticated && customerId) loadScreenData('inicio')
-  }, [isAuthenticated, customerId])
+    if (isAuthenticated && customerId && token) {
+      loadScreenData(screen)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, customerId, token, screen])
 
   const goTo = (s) => { 
     setPrevScreen(screen)
@@ -191,6 +206,7 @@ export default function MobileApp() {
           {screen === 'salud'      && <MobileFinancialHealth onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
           {screen === 'estado'     && <MobileStatement onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
           {screen === 'mascota'    && <MobilePetCustomization onBack={goBack} />}
+          {screen === 'profile'    && <MobileProfile onBack={goBack} />}
         </motion.div>
       </AnimatePresence>
 

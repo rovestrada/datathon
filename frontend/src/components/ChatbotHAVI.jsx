@@ -82,7 +82,9 @@ function MessageBubble({ msg }) {
 
 // ─── Chatbot panel ────────────────────────────────────────────────────────────
 
-const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId, token, chatOpenData }) {
+const ChatbotHAVI = memo(function ChatbotHAVI({ 
+  isOpen, onClose, customerId, token, chatOpenData, onNavigate 
+}) {
   const sessionId = useRef(crypto.randomUUID())
   const [ctasDone, setCtasDone] = useState(false)
   const [messages, setMessages] = useState(() => [{
@@ -131,7 +133,8 @@ const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId, tok
         id: msgCounter++, 
         from: 'bot', 
         ts: Date.now(),
-        text: res.ok ? data.reply : 'Tuve un problema técnico. Intenta de nuevo.' 
+        text: res.ok ? data.reply : 'Tuve un problema técnico. Intenta de nuevo.',
+        navAction: data.navigation_action // ← Guardar navegación
       }])
     } catch {
       setMessages(prev => [...prev, { 
@@ -205,6 +208,24 @@ const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId, tok
               {messages.map((msg, i) => (
                 <React.Fragment key={msg.id}>
                   <MessageBubble msg={msg} />
+                  
+                  {/* Botón de navegación sugerida */}
+                  {msg.navAction && (
+                    <div style={{ paddingLeft: '42px', marginTop: '8px' }}>
+                      <button 
+                        onClick={() => onNavigate?.(msg.navAction.screen)}
+                        style={{
+                          padding: '8px 16px', borderRadius: '12px',
+                          background: 'rgba(167,139,250,0.1)', color: '#a78bfa',
+                          border: '1.5px solid rgba(167,139,250,0.3)',
+                          fontSize: '12.5px', fontWeight: 600, cursor: 'pointer'
+                        }}
+                      >
+                        {msg.navAction.label} →
+                      </button>
+                    </div>
+                  )}
+
                   {i === 0 && !ctasDone && chatOpenData?.ctas && (
                     <div style={{ display:'flex', flexWrap:'wrap', gap:'7px', paddingLeft:'42px' }}>
                       {chatOpenData.ctas.map(cta => (

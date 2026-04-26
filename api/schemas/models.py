@@ -30,11 +30,12 @@ class TriggerActive(BaseModel):
     name: str
     opening_message: str
     ctas: list[str]
-    pet_skin: str
 
 
 class UserProfile(BaseModel):
     user_id: str
+    full_name: str | None = "Cliente Hey"  # Opcional para evitar 500s
+    email: str | None = "cliente@hey.inc"   # Opcional para evitar 500s
     archetype_name: str
     cluster_id: int
     anomaly_score: float

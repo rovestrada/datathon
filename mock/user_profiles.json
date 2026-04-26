@@ -44,9 +44,15 @@
       "trigger_id": "T06",
       "name": "Inversión desaprovechada",
       "opening_message": "Hola 👋 Tienes $12,400 en tu cuenta que no está generando rendimiento. Con Hey Inversiones podrías ganar aprox. $99/mes sin hacer nada. ¿Lo exploramos?",
-      "ctas": ["Ver inversión Hey", "Simular rendimiento", "Ahora no"],
+      "ctas": [
+        "Ver inversión Hey",
+        "Simular rendimiento",
+        "Ahora no"
+      ],
       "pet_skin": "cat_orange"
-    }
+    },
+    "full_name": "Ivan Guerrero",
+    "email": "ivan.g@hey.inc"
   },
   {
     "user_id": "USR-00101",
@@ -93,9 +99,15 @@
       "trigger_id": "T03",
       "name": "Oportunidad Hey Pro",
       "opening_message": "Hola 👋 Con lo que compraste este mes, Hey Pro te habría dado $62 de cashback automático. Son $744 al año de regreso a tu bolsillo. ¿Te cuento cómo funciona?",
-      "ctas": ["Quiero Hey Pro", "Ver beneficios", "Ahora no"],
+      "ctas": [
+        "Quiero Hey Pro",
+        "Ver beneficios",
+        "Ahora no"
+      ],
       "pet_skin": "cat_orange"
-    }
+    },
+    "full_name": "Mariana Soto",
+    "email": "mariana.s@hey.inc"
   },
   {
     "user_id": "USR-00207",
@@ -144,9 +156,15 @@
       "trigger_id": "T01",
       "name": "Pago fallido reciente",
       "opening_message": "Hola 👋 Ayer tu pago de $876 en Superama no se procesó porque no tenías saldo suficiente. ¿Quieres que active una alerta cuando tu saldo baje de cierto monto?",
-      "ctas": ["Activar alerta de saldo", "Ver mi saldo ahora", "Ahora no"],
+      "ctas": [
+        "Activar alerta de saldo",
+        "Ver mi saldo ahora",
+        "Ahora no"
+      ],
       "pet_skin": "cat_purple"
-    }
+    },
+    "full_name": "Roberto Estrada",
+    "email": "roberto.e@hey.inc"
   },
   {
     "user_id": "USR-00315",
@@ -186,9 +204,15 @@
       "trigger_id": "T08",
       "name": "Inactividad de app",
       "opening_message": "Hola, hace 25 días que no te vemos por aquí 👋 ¿Hay algo que no esté funcionando bien o en lo que te podamos ayudar?",
-      "ctas": ["Tengo una duda", "Ver novedades", "Ahora no"],
+      "ctas": [
+        "Tengo una duda",
+        "Ver novedades",
+        "Ahora no"
+      ],
       "pet_skin": "cat_gray"
-    }
+    },
+    "full_name": "Lucía Méndez",
+    "email": "lucia.m@hey.inc"
   },
   {
     "user_id": "USR-00489",
@@ -235,8 +259,14 @@
       "trigger_id": "T02",
       "name": "Suscripciones dormidas",
       "opening_message": "Hola 👋 Detecté que tienes 4 suscripciones activas que suman $1,837/mes. Notion y GitHub Copilot no muestran uso reciente. ¿Las revisamos juntos?",
-      "ctas": ["Ver mis suscripciones", "Cancelar las que no uso", "Ahora no"],
+      "ctas": [
+        "Ver mis suscripciones",
+        "Cancelar las que no uso",
+        "Ahora no"
+      ],
       "pet_skin": "cat_green"
-    }
+    },
+    "full_name": "Carlos Slim",
+    "email": "carlos.s@hey.inc"
   }
 ]
