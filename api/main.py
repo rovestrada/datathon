@@ -13,8 +13,7 @@ from services.screen_loader import load_screen_data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # En Railway, los perfiles están un nivel arriba de 'api/' si el Root es 'api'
-    # o en '../mock' si arrancamos desde 'api/'
+    # En Railway el servicio usa api/ como root, así que los mocks viven en api/mock.
     load_profiles()
     load_screen_data()
     yield

@@ -1,0 +1,31 @@
+{
+  "screen_id": "cards",
+  "user_id": "USR-00002",
+  "havi_context": "El usuario ve sus tarjetas. Su utilización de crédito es del 28% utilizado. Su cuenta de débito tiene un saldo disponible de $20,713.",
+  "havi_context_short": "Tarjetas: 28% utilizado | Débito: $20,713 💳",
+  "data": {
+    "tarjetas_credito": [
+      {
+        "producto_id": "PRD-00000004",
+        "tipo": "tarjeta_credito_hey",
+        "label": "Tarjeta Credito Hey",
+        "numero_ultimo4": "4521",
+        "limite": 22000.0,
+        "saldo_actual": 6122.6,
+        "disponible": 15877.4,
+        "utilizacion_pct": 0.2783,
+        "fecha_corte": "2025-10-15",
+        "fecha_pago": "2025-10-25",
+        "pago_minimo": 306.13,
+        "msi_activos": 0,
+        "estatus": "activo"
+      }
+    ],
+    "cuenta_debito": {
+      "saldo": 20712.54,
+      "numero": "*1234",
+      "clabe": "014580***********"
+    },
+    "rechazos_recientes": []
+  }
+}

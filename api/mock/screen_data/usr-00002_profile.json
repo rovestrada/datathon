@@ -1,0 +1,21 @@
+{
+  "screen_id": "profile",
+  "user_id": "USR-00002",
+  "havi_context": "El usuario esta en profile. Saldo: $20,713. Score: 84. Trigger: Pago fallido.",
+  "havi_context_short": "Saldo: $20,713",
+  "data": {
+    "nombre_display": "Cliente Hey",
+    "archetype_name": "Joven Digital",
+    "es_hey_pro": true,
+    "score_buro": 714,
+    "antiguedad_dias": 1410,
+    "canal_apertura": "App",
+    "preferencia_canal": "app_ios",
+    "nivel_satisfaccion": 9,
+    "num_productos_activos": 3,
+    "tiene_seguro": false,
+    "nomina_domiciliada": true,
+    "recibe_remesas": false,
+    "idioma_preferido": "es_MX"
+  }
+}

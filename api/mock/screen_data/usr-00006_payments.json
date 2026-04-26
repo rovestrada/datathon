@@ -1,0 +1,19 @@
+{
+  "screen_id": "payments",
+  "user_id": "USR-00006",
+  "havi_context": "El usuario está en pagos. Sus servicios frecuentes incluyen CFE. Hay vencimientos próximos.",
+  "havi_context_short": "Tus servicios y pagos 📄",
+  "data": {
+    "servicios_frecuentes": [
+      {
+        "nombre": "CFE",
+        "categoria": "gobierno",
+        "monto_ultimo": 450.0,
+        "dias_para_vencimiento": 5,
+        "es_recurrente": false
+      }
+    ],
+    "historial_pagos_recientes": [],
+    "pago_rechazado_reciente": null
+  }
+}

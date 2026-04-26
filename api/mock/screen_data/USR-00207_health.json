@@ -1,0 +1,25 @@
+{
+  "screen_id": "health",
+  "user_id": "USR-00207",
+  "havi_context": "Score bajo por rechazos recientes.",
+  "havi_context_short": "Score: 42/100 📉",
+  "data": {
+    "score_financiero": 42,
+    "score_label": "Mejorable",
+    "saldo_disponible": 96.84,
+    "ahorro_total": 124.0,
+    "ahorro_potencial_mensual": 300.0,
+    "distribucion_gastos": [
+      {
+        "categoria": "comida",
+        "pct": 0.4,
+        "monto": 1200
+      },
+      {
+        "categoria": "servicios",
+        "pct": 0.2,
+        "monto": 600
+      }
+    ]
+  }
+}

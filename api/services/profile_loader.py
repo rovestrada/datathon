@@ -6,8 +6,15 @@ from pathlib import Path
 # Índice en memoria: { user_id: dict }
 _profiles: dict[str, dict] = {}
 
-# Path del JSON relativo a este archivo (funciona desde cualquier CWD)
-_DEFAULT_PATH = Path(__file__).parent.parent.parent / "mock" / "user_profiles.json"
+# Path del JSON relativo al paquete api/ (funciona desde cualquier CWD).
+_API_MOCK_PATH = Path(__file__).parent.parent / "mock" / "user_profiles.json"
+_LEGACY_MOCK_PATH = Path(__file__).parent.parent.parent / "mock" / "user_profiles.json"
+
+
+def _default_profiles_path() -> Path:
+    if _API_MOCK_PATH.exists():
+        return _API_MOCK_PATH
+    return _LEGACY_MOCK_PATH
 
 
 def load_profiles(path: str | None = None) -> None:
@@ -18,7 +25,7 @@ def load_profiles(path: str | None = None) -> None:
         data: list[dict] = json.loads(base64.b64decode(b64).decode("utf-8"))
         print(f"[loader] {len(data)} perfiles cargados desde USER_PROFILES_B64")
     else:
-        p = Path(path) if path else _DEFAULT_PATH
+        p = Path(path) if path else _default_profiles_path()
         data = json.loads(p.read_text(encoding="utf-8"))
         print(f"[loader] {len(data)} perfiles cargados desde '{p}'")
     _profiles = {u["user_id"]: u for u in data}

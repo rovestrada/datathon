@@ -4,14 +4,21 @@ from pathlib import Path
 # Cache en memoria: { "USR-00042_home": {...} }
 _screen_data: dict[str, dict] = {}
 
-_DEFAULT_SCREEN_DIR = Path(__file__).parent.parent.parent / "mock" / "screen_data"
+_API_SCREEN_DIR = Path(__file__).parent.parent / "mock" / "screen_data"
+_LEGACY_SCREEN_DIR = Path(__file__).parent.parent.parent / "mock" / "screen_data"
+
+
+def _default_screen_dir() -> Path:
+    if _API_SCREEN_DIR.exists():
+        return _API_SCREEN_DIR
+    return _LEGACY_SCREEN_DIR
 
 
 def load_screen_data(directory: str | None = None) -> None:
     """Carga todos los JSONs de datos de pantalla."""
     global _screen_data
     _screen_data = {}
-    p = Path(directory) if directory else _DEFAULT_SCREEN_DIR
+    p = Path(directory) if directory else _default_screen_dir()
     if not p.exists():
         print(f"[screen_loader] Directorio {p} no existe — usando datos vacíos")
         return

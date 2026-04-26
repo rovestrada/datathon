@@ -1,0 +1,20 @@
+{
+  "screen_id": "payments",
+  "user_id": "USR-00489",
+  "havi_context": "El usuario tiene 8 suscripciones activas. Podría ahorrar $400 si cancela las que no usa.",
+  "havi_context_short": "Tienes 8 suscripciones activas 🍿",
+  "data": {
+    "servicios_frecuentes": [
+      {
+        "nombre": "Netflix",
+        "monto_ultimo": 219.0,
+        "es_recurrente": true
+      },
+      {
+        "nombre": "Spotify",
+        "monto_ultimo": 115.0,
+        "es_recurrente": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "screen_id": "home",
+  "user_id": "USR-00007",
+  "havi_context": "El usuario esta en home. Saldo: $48,408. Score: 90. Trigger: Pago fallido.",
+  "havi_context_short": "Saldo: $48,408",
+  "data": {
+    "saldo_disponible": 48407.64,
+    "cashback_acumulado": 265.36,
+    "productos_resumen": [
+      {
+        "tipo": "cuenta_debito",
+        "label": "Cuenta Hey",
+        "saldo": 48407.64,
+        "numero": "*1234"
+      }
+    ],
+    "movimientos_recientes": [
+      {
+        "fecha": "2025-12-01",
+        "comercio": "transf_entrada",
+        "monto": 10600.0,
+        "categoria": "transferencia",
+        "tipo": "transf_entrada"
+      },
+      {
+        "fecha": "2025-11-27",
+        "comercio": "BiciShare MX",
+        "monto": -1648.44,
+        "categoria": "transporte",
+        "tipo": "compra"
+      },
+      {
+        "fecha": "2025-11-15",
+        "comercio": "transf_entrada",
+        "monto": 7750.0,
+        "categoria": "transferencia",
+        "tipo": "transf_entrada"
+      }
+    ],
+    "trigger_banner": {
+      "trigger_id": "T01",
+      "mensaje_corto": "Detecté un pago fallido de $54,000. ¿Te ayudo?",
+      "cta": "Ver motivo"
+    }
+  }
+}

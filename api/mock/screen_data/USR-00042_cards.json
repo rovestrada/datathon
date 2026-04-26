@@ -1,0 +1,10 @@
+{
+  "screen_id": "cards",
+  "user_id": "USR-00042",
+  "havi_context": "Ivan ve su Tarjeta Hey. Tiene un límite de $15,000 y ha usado $8,250 (55%). Tiene 3 compras a MSI.",
+  "havi_context_short": "Tarjeta: 55% utilizado 💳",
+  "data": {
+    "last4": "4521",
+    "disponible": 6750.0
+  }
+}

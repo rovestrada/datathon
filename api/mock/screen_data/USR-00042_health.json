@@ -1,0 +1,25 @@
+{
+  "screen_id": "health",
+  "user_id": "USR-00042",
+  "havi_context": "Ivan ve su salud financiera. Score 72.",
+  "havi_context_short": "Score: 72/100 📊",
+  "data": {
+    "score_financiero": 72,
+    "score_label": "Bueno",
+    "saldo_disponible": 12400.0,
+    "ahorro_total": 875.0,
+    "ahorro_potencial_mensual": 300.0,
+    "distribucion_gastos": [
+      {
+        "categoria": "comida",
+        "pct": 0.4,
+        "monto": 1200
+      },
+      {
+        "categoria": "servicios",
+        "pct": 0.2,
+        "monto": 600
+      }
+    ]
+  }
+}
