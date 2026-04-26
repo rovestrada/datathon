@@ -12,6 +12,9 @@ export function AuthProvider({ children }) {
   const [customerId, setCustomerId] = useState(
     () => sessionStorage.getItem('havi_customer_id')
   )
+  const [userName, setUserName] = useState(
+    () => sessionStorage.getItem('havi_user_name')
+  )
   const [token, setToken] = useState(
     () => sessionStorage.getItem(SS_TOKEN_KEY)
   )
@@ -37,12 +40,20 @@ export function AuthProvider({ children }) {
       
       const { token: tok, user_id } = await authRes.json()
 
-      // Cachear user_id en localStorage para la próxima vez
+      // Cargar perfil completo para obtener el nombre
+      const profileRes = await fetch(`/api/user/profile/${user_id}`, {
+        headers: { Authorization: `Bearer ${tok}` },
+      })
+      const profileData = await profileRes.json()
+
+      // Cachear datos
       localStorage.setItem(LS_USER_KEY, user_id)
       sessionStorage.setItem('havi_customer_id', user_id)
+      sessionStorage.setItem('havi_user_name', profileData.full_name)
       sessionStorage.setItem(SS_TOKEN_KEY, tok)
       
       setCustomerId(user_id)
+      setUserName(profileData.full_name)
       setToken(tok)
 
       // Cargar trigger activo (skin + mensaje de apertura)
@@ -72,7 +83,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{
-      customerId, token, chatOpenData, cachedUserId,
+      customerId, userName, token, chatOpenData, cachedUserId,
       loginError, loginLoading,
       isAuthenticated: Boolean(customerId && token),
       login, logout,

@@ -57,13 +57,16 @@ Este documento contiene los pasos mínimos para correr el **Backend (FastAPI)** 
 
 ## 🧪 Paso 3: Credenciales de Prueba (Demo Flow)
 
-Usa cualquiera de estos usuarios para ver la **inteligencia proactiva** y el **screen-awareness** en acción. El password para todos es **`demo`**.
+Usa cualquiera de estos usuarios para ver la **inteligencia proactiva** y el **screen-awareness** en acción. 
 
-| User ID | Escenario de Demo | Mascota (Arquetipo) |
-| :--- | :--- | :--- |
-| **`USR-00042`** | **Inversión:** Sugiere invertir $12,400 ociosos. | Zorro Rojo |
-| **`USR-00207`** | **Pago Fallido:** Analiza por qué no pasó el pago en Superama. | Perro Blanco |
-| **`USR-00489`** | **Suscripciones:** Detecta $1,837 mensuales en apps "dormidas". | Panda Marrón |
+> **Nota:** Debes escribir tanto el User ID como la contraseña manualmente. La contraseña para todos es **`demo`**.
+
+| User ID | Nombre en App | Escenario de Demo | Mascota |
+| :--- | :--- | :--- | :--- |
+| **`USR-00042`** | **Ivan** | **Inversión:** Sugiere invertir $12,400 ociosos. | Zorro Rojo |
+| **`USR-00207`** | **Roberto** | **Pago Fallido:** Analiza pago fallido en Superama. | Perro Blanco |
+| **`USR-00489`** | **Carlos** | **Suscripciones:** Detecta $1,837 en apps mensuales. | Panda Marrón |
+| **`USR-00101`** | **Mariana** | **Hey Pro:** Oportunidad de ser Hey Pro. | Panda Negro |
 
 ---
 

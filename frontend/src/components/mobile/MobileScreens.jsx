@@ -114,3 +114,28 @@ export function MobileCards({ onBack }) {
     </SimpleMobileScreen>
   )
 }
+
+export function MobileProfile({ onBack }) {
+  return (
+    <SimpleMobileScreen title="Mi Perfil" onBack={onBack}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '30px' }}>
+          <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#a78bfa', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '12px' }}>👤</div>
+          <h2 style={{ color: 'white', margin: 0 }}>Cliente Hey</h2>
+          <p style={{ color: '#666', margin: '4px 0' }}>Hey Pro Activo ⭐</p>
+        </div>
+        <div style={{ background: '#1a1a2a', borderRadius: '16px', padding: '20px' }}>
+          <p style={{ color: '#666', fontSize: '12px', margin: '0 0 10px' }}>INFORMACIÓN PERSONAL</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+            <span style={{ color: '#9ca3af' }}>Teléfono</span>
+            <span style={{ color: 'white' }}>(81) **** 2626</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#9ca3af' }}>Correo</span>
+            <span style={{ color: 'white' }}>cl***@hey.inc</span>
+          </div>
+        </div>
+      </motion.div>
+    </SimpleMobileScreen>
+  )
+}
