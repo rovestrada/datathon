@@ -59,7 +59,7 @@ const PET_NOTIFICATIONS = [
 ]
 
 export default function MobileApp() {
-  const { isAuthenticated, customerId, token, chatOpenData } = useAuth()
+  const { isAuthenticated, customerId, userName, token, chatOpenData } = useAuth()
   const { petEnabled, petType, petVariant, applyArchetypeDefault } = usePet()
   const { navigateTo, cacheScreenData, screenCache } = useScreen()
   const [screen, setScreen] = useState('inicio')
@@ -95,33 +95,33 @@ export default function MobileApp() {
   // Schedule periodic pet notifications (only on non-full screens)
   useEffect(() => {
     if (!isAuthenticated) return
+    let mainTimer
+    let dismissTimer
+
     const schedule = () => {
       const delay = 30000 + Math.random() * 10000
-      return setTimeout(() => {
+      mainTimer = setTimeout(() => {
         setNotifMsgIdx(i => {
           const next = (i + 1) % PET_NOTIFICATIONS.length
           setNotification(PET_NOTIFICATIONS[next])
           return next
         })
-        // Auto-dismiss after 5 s
-        const dismiss = setTimeout(() => setNotification(null), 5000)
-        timer = schedule()
-        return () => clearTimeout(dismiss)
+        dismissTimer = setTimeout(() => setNotification(null), 5000)
+        schedule()
       }, delay)
     }
-    let timer = schedule()
-    return () => clearTimeout(timer)
+
+    schedule()
+    return () => {
+      clearTimeout(mainTimer)
+      clearTimeout(dismissTimer)
+    }
   }, [isAuthenticated])
 
   // Pause pet whenever entering a free screen; bubble dismiss will unpause
   useEffect(() => {
     if (FREE_SCREENS.includes(screen)) {
       setPetPaused(true)
-      // H05: En salud y estado, la bubble aparece sola tras 1.5s (unpausing pet triggers it)
-      if (screen === 'salud' || screen === 'estado' || screen === 'cards') {
-        const t = setTimeout(() => setPetPaused(false), 1500)
-        return () => clearTimeout(t)
-      }
     } else {
       setPetPaused(false)
     }
@@ -201,7 +201,7 @@ export default function MobileApp() {
           {screen === 'transferir' && <MobileTransferir customerId={customerId} onBack={goBack} />}
           {screen === 'buzon'      && <MobileBuzon onBack={goBack} />}
           {screen === 'cards'      && <MobileCards onBack={goBack} />}
-          {screen === 'havi'       && <MobileHAVI customerId={customerId} token={token} chatOpenData={chatOpenData} onBack={goBack} onNavigate={goTo} />}
+          {screen === 'havi'       && <MobileHAVI customerId={customerId} userName={userName} token={token} chatOpenData={chatOpenData} petEnabled={petEnabled} petType={petType} petVariant={petVariant} onBack={goBack} onNavigate={goTo} />}
           {screen === 'ajustes'    && <MobileSettings onBack={goBack} onNavigate={goTo} />}
           {screen === 'salud'      && <MobileFinancialHealth onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
           {screen === 'estado'     && <MobileStatement onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
@@ -210,14 +210,15 @@ export default function MobileApp() {
         </motion.div>
       </AnimatePresence>
 
-      {/* HAVI suggestion bubble */}
-      {showBubble && (
+      {/* HAVI suggestion bubble — hidden while a notification is active */}
+      {showBubble && !notification && (
         <HaviBubble
           screen={screen}
           onOpenHAVI={() => goTo('havi')}
           bottomOffset={isNavScreen ? '88px' : '82px'}
           thoughtBubble={thoughtBubble && petEnabled}
-          onDismiss={isFreeScreen ? () => setPetPaused(false) : undefined}
+          onShow={() => setPetPaused(true)}
+          onDismiss={() => setPetPaused(false)}
           petX={petX}
           facingR={petFacingR}
         />
@@ -229,7 +230,7 @@ export default function MobileApp() {
           petType={petType}
           petVariant={petVariant}
           navVisible={petNavVisible}
-          paused={isFreeScreen && petPaused}
+          paused={petPaused}
           notification={!showBottomNav ? notification : null}
           onNotificationDismiss={dismissNotification}
           onPress={() => { dismissNotification(); goTo('havi') }}

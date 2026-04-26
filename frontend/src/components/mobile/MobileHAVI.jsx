@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Send, Loader2 } from 'lucide-react'
 import HaviLogo from '../HaviLogo'
+import { getGifUrl, PET_TYPES } from './petSprites'
 import React from 'react'
 
 let msgId = 10
@@ -11,14 +12,22 @@ function now() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-export default function MobileHAVI({ customerId, token, chatOpenData, onBack, onNavigate }) {
+export default function MobileHAVI({ customerId, userName, token, chatOpenData, petEnabled, petType, petVariant, onBack, onNavigate }) {
   const sessionId = useRef(crypto.randomUUID())
   const [ctasDone, setCtasDone] = useState(false)
+
+  const firstName = userName ? userName.split(' ')[0] : null
+  const greeting = firstName
+    ? `¡Hola, ${firstName}! Soy HAVI. ¿En qué puedo ayudarte?`
+    : `¡Hola! Soy HAVI. ¿En qué puedo ayudarte?`
+
   const [messages, setMessages] = useState(() => [
     {
       id: 1,
       from: 'bot',
-      text: chatOpenData?.opening_message ?? `¡Hola! Soy HAVI. ¿En qué puedo ayudarte?`,
+      text: chatOpenData?.opening_message
+        ? chatOpenData.opening_message.replace('¡Hola!', firstName ? `¡Hola, ${firstName}!` : '¡Hola!')
+        : greeting,
       ts: now(),
     }
   ])
@@ -82,7 +91,9 @@ export default function MobileHAVI({ customerId, token, chatOpenData, onBack, on
     setMessages([{
       id: msgId++,
       from: 'bot',
-      text: chatOpenData?.opening_message ?? `¡Hola! Soy HAVI.`,
+      text: chatOpenData?.opening_message
+        ? chatOpenData.opening_message.replace('¡Hola!', firstName ? `¡Hola, ${firstName}!` : '¡Hola!')
+        : greeting,
       ts: now(),
     }])
   }
@@ -113,7 +124,15 @@ export default function MobileHAVI({ customerId, token, chatOpenData, onBack, on
           ‹
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <HaviLogo size={26} />
+          {petEnabled ? (
+            <img
+              src={getGifUrl(petType, petVariant || PET_TYPES[petType]?.defaultVariant, 'idle')}
+              alt="pet"
+              style={{ width: 32, height: 32, imageRendering: 'pixelated' }}
+            />
+          ) : (
+            <HaviLogo size={26} />
+          )}
           <ChevronDown size={14} color="#9ca3af" />
         </div>
       </div>

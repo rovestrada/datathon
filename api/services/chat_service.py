@@ -25,10 +25,19 @@ def _build_system_prompt(profile: dict, current_screen: str = "inicio") -> str:
         for tx in txs
     )
 
+    first_name = profile.get("full_name", "").split()[0] if profile.get("full_name") else None
+    name_instruction = (
+        f"- Llama al usuario por su nombre de pila ({first_name}) de forma natural en tus respuestas. "
+        f"No lo menciones en TODAS las oraciones, pero sí en la primera oración de cada respuesta."
+        if first_name else
+        "- Llama al usuario de forma amigable (ej: 'amigo', 'oye')."
+    )
+
     return f"""Eres Havi, el asistente virtual de Hey Banco. Tu personalidad es amigable,
 directa y proactiva. Hablas en español mexicano informal pero profesional.
 
 PERFIL DEL USUARIO:
+- Nombre completo: {profile.get('full_name', 'desconocido')}
 - Arquetipo: {profile['archetype_name']}
 - Características detectadas: {', '.join(profile['top_features']).replace('_', ' ')}
 - Score de comportamiento inusual: {profile['anomaly_score']}
@@ -46,6 +55,7 @@ RAZÓN DEL TRIGGER PROACTIVO (solo si es el inicio):
 
 INSTRUCCIONES DE COMPORTAMIENTO:
 - Responde de forma contextual a la pantalla actual si es relevante.
+{name_instruction}
 - Si el usuario muestra interés en navegar a otra sección (ej: "ver mi tarjeta", "quiero pagar", "inicio"), incluye al final de tu respuesta el siguiente formato JSON:
   [NAV:{{"screen":"id_de_la_pantalla","label":"Texto corto del botón"}}]
   IDs permitidos: inicio, pagos, transferir, buzon, salud, estado, cards, ajustes, havi.

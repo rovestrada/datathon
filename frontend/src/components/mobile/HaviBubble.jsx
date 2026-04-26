@@ -4,7 +4,7 @@ import { X } from 'lucide-react'
 import { useScreen } from '../../context/ScreenContext'
 import { useAuth } from '../../context/AuthContext'
 
-export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', onDismiss, petX, facingR }) {
+export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', onDismiss, onShow, petX, facingR }) {
   const { screenCache } = useScreen()
   const { chatOpenData } = useAuth()
   const [visible, setVisible] = useState(false)
@@ -22,26 +22,39 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', 
   const screenData = screenCache[screen]
   const message = screenData?.havi_context_short ?? SCREEN_MESSAGES[screen] ?? '¡Hola! 👋'
 
-  const bubbleWidth = 180;
-  const margin = 10;
-  const petCenter = petX + 32;
+  const BUBBLE_W  = 180
+  const PET_W     = 64
+  const PADDING   = 8
 
-  // Lógica de visibilidad dinámica basada en dirección
-  // Si mira a la derecha (facingR=true), la caja sale a la derecha (necesita espacio a la derecha)
-  // Si mira a la izquierda (facingR=false), la caja sale a la izquierda (necesita espacio a la izquierda)
-  const hasSpace = facingR 
-    ? (petCenter < (window.innerWidth - bubbleWidth - margin))
-    : (petCenter > (bubbleWidth + margin));
+  // Pet center X
+  const petCenter = petX + PET_W / 2
+
+  // Preferred left edge: to the right of pet when facing right, to the left when facing left
+  const preferredLeft = facingR
+    ? petCenter + 6
+    : petCenter - BUBBLE_W - 6
+
+  // Clamp so the bubble never overflows viewport
+  const clampedLeft = Math.max(
+    PADDING,
+    Math.min(window.innerWidth - BUBBLE_W - PADDING, preferredLeft)
+  )
+
+  // Arrow X relative to clampedLeft, pointing at pet center
+  const arrowLeft = Math.max(8, Math.min(BUBBLE_W - 20, petCenter - clampedLeft - 7))
 
   useEffect(() => {
     setVisible(false)
-    const t = setTimeout(() => setVisible(true), 1500)
+    const t = setTimeout(() => {
+      setVisible(true)
+      onShow?.()
+    }, 1500)
     return () => clearTimeout(t)
   }, [screen])
 
   return (
     <AnimatePresence>
-      {visible && hasSpace && (
+      {visible && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -50,16 +63,15 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', 
           style={{
             position: 'fixed',
             bottom: `calc(${bottomOffset} + 60px)`,
-            left: `${petCenter}px`,
+            left: `${clampedLeft}px`,
+            width: `${BUBBLE_W}px`,
             zIndex: 40,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: facingR ? 'flex-start' : 'flex-end', // Alinear al ancla según dirección
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            transition: 'left 0.15s linear',
           }}
         >
-          {/* El cuerpo de la burbuja */}
-          <div 
+          {/* Bubble body */}
+          <div
             onClick={onOpenHAVI}
             style={{
               background: 'white',
@@ -69,19 +81,13 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', 
               boxShadow: '0 4px 0 rgba(0,0,0,0.1)',
               cursor: 'pointer',
               pointerEvents: 'auto',
-              width: `${bubbleWidth}px`,
               textAlign: 'center',
-              // Margen dinámico para no tapar la flecha
-              marginLeft: facingR ? '10px' : '0',
-              marginRight: facingR ? '0' : '10px'
             }}
           >
             <button
               onClick={(e) => { e.stopPropagation(); setVisible(false); onDismiss?.() }}
               style={{
-                position: 'absolute', top: '-10px', 
-                right: facingR ? '-10px' : 'auto',
-                left: facingR ? 'auto' : '-10px',
+                position: 'absolute', top: '-10px', right: '-10px',
                 background: 'white', border: '2px solid black',
                 width: '18px', height: '18px', display: 'flex',
                 alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
@@ -104,29 +110,24 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', 
             </p>
           </div>
 
-          {/* Flecha dinámica */}
-          <div style={{
-            marginLeft: facingR ? '10px' : '0',
-            marginRight: facingR ? '0' : '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: facingR ? 'flex-start' : 'flex-end',
-            marginTop: '-2px'
-          }}>
+          {/* Arrow pointing down toward pet */}
+          <div style={{ position: 'relative', height: '12px', marginTop: '-2px' }}>
             <div style={{
+              position: 'absolute',
+              left: `${arrowLeft}px`,
               width: 0, height: 0,
-              borderLeft: facingR ? '1px solid transparent' : '12px solid transparent',
-              borderRight: facingR ? '12px solid transparent' : '1px solid transparent',
+              borderLeft: '7px solid transparent',
+              borderRight: '7px solid transparent',
               borderTop: '12px solid black',
             }} />
             <div style={{
+              position: 'absolute',
+              left: `${arrowLeft + 2}px`,
+              top: '0px',
               width: 0, height: 0,
-              borderLeft: facingR ? '0px solid transparent' : '8px solid transparent',
-              borderRight: facingR ? '8px solid transparent' : '0px solid transparent',
-              borderTop: '8px solid white',
-              marginTop: '-14px',
-              marginLeft: facingR ? '2px' : '0',
-              marginRight: facingR ? '0' : '2px'
+              borderLeft: '5px solid transparent',
+              borderRight: '5px solid transparent',
+              borderTop: '9px solid white',
             }} />
           </div>
         </motion.div>
