@@ -7,6 +7,23 @@ _screen_data: dict[str, dict] = {}
 _API_SCREEN_DIR = Path(__file__).parent.parent / "mock" / "screen_data"
 _LEGACY_SCREEN_DIR = Path(__file__).parent.parent.parent / "mock" / "screen_data"
 
+# El frontend envía nombres en español; los JSONs usan inglés.
+_SCREEN_NAME_MAP = {
+    'inicio':     'home',
+    'salud':      'health',
+    'estado':     'statement',
+    'pagos':      'payments',
+    'buzon':      'inbox',
+    'transferir': 'transfer',
+    'cards':      'cards',
+    'profile':    'profile',
+    'havi':       'havi',
+}
+
+
+def _normalize(screen_id: str) -> str:
+    return _SCREEN_NAME_MAP.get(screen_id, screen_id)
+
 
 def _default_screen_dir() -> Path:
     if _API_SCREEN_DIR.exists():
@@ -22,20 +39,21 @@ def load_screen_data(directory: str | None = None) -> None:
     if not p.exists():
         print(f"[screen_loader] Directorio {p} no existe — usando datos vacíos")
         return
-    
-    files = list(p.glob("*.json"))
-    for f in files:
+
+    for f in p.glob("*.json"):
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
             key = f"{d['user_id']}_{d['screen_id']}"
             _screen_data[key] = d
         except Exception as e:
             print(f"[screen_loader] Error leyendo {f.name}: {e}")
-    
+
     print(f"[screen_loader] {len(_screen_data)} estados de pantalla cargados")
 
+
 def get_screen_data(user_id: str, screen_id: str) -> dict | None:
-    return _screen_data.get(f"{user_id}_{screen_id}")
+    return _screen_data.get(f"{user_id}_{_normalize(screen_id)}")
+
 
 def get_havi_context(user_id: str, screen_id: str) -> str:
     """Retorna el havi_context para inyectar en el system prompt."""

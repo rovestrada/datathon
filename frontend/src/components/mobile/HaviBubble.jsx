@@ -72,7 +72,7 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', 
         >
           {/* Bubble body */}
           <div
-            onClick={onOpenHAVI}
+            onClick={() => onOpenHAVI?.(message)}
             style={{
               background: 'white',
               border: '2px solid black',

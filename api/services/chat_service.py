@@ -422,39 +422,79 @@ def _build_system_prompt(profile: dict, memory: dict, current_screen: str = "ini
     if memory.get("summary"):
         summary_section = f"\nRESUMEN DE LA CONVERSACIÓN HASTA AHORA:\n{memory['summary']}"
 
+    # Pantallas con contenido propio — screen context es la fuente primaria
+    is_content_screen = current_screen not in ('inicio', 'havi', 'home', '')
+
+    trigger_block = (
+        f"RAZÓN POR LA QUE INICIASTE ESTA CONVERSACIÓN (contexto de fondo):\n"
+        f"- Trigger: {t['name']} ({t['trigger_id']})\n"
+        f"- Mensaje inicial: \"{t['opening_message']}\""
+    )
+
+    if is_content_screen:
+        # Pantallas de contenido: screen data primero, trigger al final como contexto secundario
+        body = f"""PANTALLA ACTUAL: {current_screen}
+FUENTE PRIMARIA — DATOS DE LO QUE EL USUARIO ESTÁ VIENDO AHORA:
+{screen_ctx}
+{cross_screen}
+TRANSACCIONES RECIENTES:
+{tx_lines}
+{memory_section}
+{summary_section}
+
+{trigger_block}"""
+        data_source_instruction = (
+            "- PRIORIDAD DE DATOS: Si el usuario pregunta sobre saldos, scores, tarjetas, pagos "
+            "o cualquier dato específico, usa SIEMPRE la sección FUENTE PRIMARIA. "
+            "El trigger es solo contexto de fondo — no lo menciones a menos que el usuario lo traiga."
+        )
+    else:
+        # Pantalla de inicio o chat directo: trigger es relevante
+        body = f"""RAZÓN POR LA QUE INICIASTE ESTA CONVERSACIÓN:
+- Trigger: {t['name']} ({t['trigger_id']})
+- Mensaje inicial que enviaste: "{t['opening_message']}"
+
+PANTALLA ACTUAL: {current_screen}
+CONTEXTO DE LO QUE EL USUARIO VE:
+{screen_ctx}
+{cross_screen}
+TRANSACCIONES RECIENTES:
+{tx_lines}
+{memory_section}
+{summary_section}"""
+        data_source_instruction = (
+            "- Puedes mencionar el trigger activo de forma proactiva si el usuario no ha preguntado "
+            "nada específico aún. Si ya preguntó algo concreto, enfócate en eso."
+        )
+
     return f"""Eres Havi, el asistente virtual de Hey Banco. Eres amigable, directo y proactivo.
 Hablas en español mexicano informal pero profesional. Usas emojis ocasionalmente.
 
-PERFIL DEL USUARIO (detectado por el sistema ML):
+PERFIL DEL USUARIO (ML):
 - Nombre: {profile.get('full_name', 'Cliente')}
 - Arquetipo: {profile['archetype_name']}
 - Características: {', '.join(profile['top_features']).replace('_', ' ')}
 - Score de comportamiento inusual: {profile['anomaly_score']} (0=normal, 1=muy inusual)
 
-RAZÓN POR LA QUE INICIASTE ESTA CONVERSACIÓN:
-- Trigger: {t['name']} ({t['trigger_id']})
-- Mensaje inicial que enviaste: "{t['opening_message']}"
-
-PANTALLA ACTUAL: {current_screen}
-CONTEXTO DETALLADO DE LO QUE EL USUARIO ESTÁ VIENDO:
-{screen_ctx}
-{cross_screen}
-TRANSACCIONES RECIENTES DEL USUARIO:
-{tx_lines}
-{memory_section}
-{summary_section}
+{body}
 
 INSTRUCCIONES:
 {name_line}
-- Usa TODO el contexto acumulado para personalizar cada respuesta. Si el usuario mencionó
-  una meta u objetivo, refiérete a ella cuando sea relevante.
+{data_source_instruction}
+- Usa el contexto acumulado para personalizar respuestas. Si el usuario mencionó una meta, refiérete a ella.
 - NO vuelvas a ofrecer algo que el usuario ya rechazó en esta sesión.
-- Si el usuario corrigió información del perfil, usa la corrección, no el perfil original.
-- Si detectas que el usuario quiere navegar a otra pantalla, incluye al final de tu
-  respuesta el token exacto: [NAV:{{"screen":"nombre","label":"texto del botón"}}]
-  Pantallas disponibles: inicio, pagos, transferir, buzon, salud, estado, cards, ajustes
+- Si el usuario corrigió información del perfil, usa la corrección.
+- NAVEGACIÓN — reglas estrictas:
+  Incluye [NAV:{{"screen":"id","label":"texto"}}] SOLO si se cumplen LAS DOS condiciones:
+  1. El usuario dice EXPLÍCITAMENTE que quiere ir a otra sección con palabras como
+     "quiero ver", "llévame", "muéstrame", "ir a", "abre", "navegar", "ir a", "mostrar".
+     Preguntar sobre un tema NO es suficiente — solo una solicitud directa de ir cuenta.
+  2. La pantalla destino es DIFERENTE a la pantalla actual ({current_screen}).
+  Si no se cumplen ambas condiciones, NO incluyas NAV. Omite el token completamente.
+  El label debe ser específico: "Ver mis tarjetas", "Ir a Pagos", "Ver movimientos".
+  Máximo 1 NAV por respuesta.
 - Respuestas cortas: máximo 3-4 oraciones. El usuario está en su teléfono.
-- SOLO texto plano antes del NAV. Sin markdown, sin asteriscos, sin listas con guiones."""
+- SOLO texto plano antes del NAV. Sin markdown, sin asteriscos."""
 
 
 # ── Main function ────────────────────────────────────────────────────────────

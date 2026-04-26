@@ -13,7 +13,7 @@ function now() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-export default function MobileHAVI({ customerId, userName, token, chatOpenData, petEnabled, petType, petVariant, originScreen = 'inicio', onBack, onNavigate }) {
+export default function MobileHAVI({ customerId, userName, token, chatOpenData, petEnabled, petType, petVariant, originScreen = 'inicio', bubbleOpenMessage = null, onBack, onNavigate }) {
   const sessionId = useRef(crypto.randomUUID())
   const [ctasDone, setCtasDone] = useState(false)
 
@@ -22,13 +22,16 @@ export default function MobileHAVI({ customerId, userName, token, chatOpenData, 
     ? `¡Hola, ${firstName}! Soy HAVI. ¿En qué puedo ayudarte?`
     : `¡Hola! Soy HAVI. ¿En qué puedo ayudarte?`
 
+  const triggerMessage = chatOpenData?.opening_message
+    ? chatOpenData.opening_message.replace('¡Hola!', firstName ? `¡Hola, ${firstName}!` : '¡Hola!')
+    : greeting
+
   const [messages, setMessages] = useState(() => [
     {
       id: 1,
       from: 'bot',
-      text: chatOpenData?.opening_message
-        ? chatOpenData.opening_message.replace('¡Hola!', firstName ? `¡Hola, ${firstName}!` : '¡Hola!')
-        : greeting,
+      // Si el usuario abrió desde la burbuja, usar ese mensaje; si no, usar el trigger
+      text: bubbleOpenMessage ?? triggerMessage,
       ts: now(),
     }
   ])
