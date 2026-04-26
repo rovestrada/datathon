@@ -70,11 +70,10 @@ const NavPet = memo(function NavPet({
     }, 320)
   }, [navVisible])
 
-  // 8fps game loop — position only (GIF handles its own frame animation)
+  // 8fps game loop — position only
   useEffect(() => {
     const iv = setInterval(() => {
-      if (tpRef.current) return
-      if (pausedRef.current) return
+      if (tpRef.current || pausedRef.current) return
 
       if (anim === 'idle') {
         idleRef.current++
@@ -85,6 +84,7 @@ const NavPet = memo(function NavPet({
         return
       }
 
+      let currentX = 0;
       setX(prev => {
         const w = window.innerWidth
         const speed = facingRef.current ? 2 : -2
@@ -105,14 +105,19 @@ const NavPet = memo(function NavPet({
         }
         if (stepsRef.current > 120 && Math.random() < 0.009) teleport()
 
-        // Avisar del cambio de posición y dirección
-        onPositionChange?.({ x: next, facingR: facingRef.current }) 
-        
+        currentX = next;
         return next
       })
+
+      // NOTIFICACIÓN ASÍNCRONA: Evita el error de "Cannot update during render"
+      if (onPositionChange && currentX !== 0) {
+        window.requestAnimationFrame(() => {
+          onPositionChange({ x: currentX, facingR: facingRef.current })
+        })
+      }
     }, 125)
     return () => clearInterval(iv)
-  }, [anim, teleport])
+  }, [anim, teleport, onPositionChange])
 
   const gifSrc = getGifUrl(petType, variant, anim)
 
@@ -135,7 +140,6 @@ const NavPet = memo(function NavPet({
           }
           style={{ position: 'fixed', left: x, top: topY, zIndex: 45, cursor: 'pointer' }}
           onClick={onPress}
-          title="¡Toca para hablar con HAVI!"
         >
           <img
             src={gifSrc}
