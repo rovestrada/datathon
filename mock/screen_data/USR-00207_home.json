@@ -1,0 +1,18 @@
+{
+  "screen_id": "home",
+  "user_id": "USR-00207",
+  "havi_context": "Pago rechazado en Superama por $876.",
+  "havi_context_short": "Pago Superama fall\u00f3 \u26a0\ufe0f",
+  "data": {
+    "saldo_disponible": 96.84,
+    "cashback_acumulado": 12.4,
+    "movimientos_recientes": [
+      {
+        "fecha": "24 abr",
+        "comercio": "Superama",
+        "monto": -876.0,
+        "estatus": "no_procesada"
+      }
+    ]
+  }
+}

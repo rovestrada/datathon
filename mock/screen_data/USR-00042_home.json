@@ -1,10 +1,22 @@
 {
   "screen_id": "home",
   "user_id": "USR-00042",
-  "havi_context": "El usuario Ivan est\u00e1 en el inicio. Saldo Hey: $12,400. Tiene una inversi\u00f3n sugerida de $99/mes de rendimiento.",
-  "havi_context_short": "Tu saldo: $12,400 \ud83d\udcb0",
+  "havi_context": "Saldo de $12,400. Inversi\u00f3n sugerida.",
+  "havi_context_short": "Saldo: $12,400 \ud83d\udcb0",
   "data": {
-    "saldo": 12400.0,
-    "nombre": "Ivan G."
+    "saldo_disponible": 12400.0,
+    "cashback_acumulado": 87.5,
+    "movimientos_recientes": [
+      {
+        "fecha": "25 abr",
+        "comercio": "Spotify",
+        "monto": -99.0
+      },
+      {
+        "fecha": "24 abr",
+        "comercio": "Toks",
+        "monto": -340.0
+      }
+    ]
   }
 }

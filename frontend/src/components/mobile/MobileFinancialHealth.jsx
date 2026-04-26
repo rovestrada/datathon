@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronLeft, TrendingUp, TrendingDown, Minus, ShieldCheck } from 'lucide-react'
-
-const SCORE = 72
+import { useScreen } from '../../context/ScreenContext'
 
 // Gauge arc helpers
-function ScoreGauge({ score }) {
+function ScoreGauge({ score, label }) {
   const r = 80
   const cx = 110
   const cy = 110
@@ -25,27 +24,24 @@ function ScoreGauge({ score }) {
       />
       <text x="110" y="100" textAnchor="middle" fill="white" fontSize="32" fontWeight="800">{score}</text>
       <text x="110" y="116" textAnchor="middle" fill={color} fontSize="12" fontWeight="600">
-        {score >= 70 ? 'Buena' : score >= 40 ? 'Regular' : 'Baja'}
+        {label || (score >= 70 ? 'Buena' : score >= 40 ? 'Regular' : 'Baja')}
       </text>
     </svg>
   )
 }
 
-const CATEGORIES = [
-  { label: 'Ahorro', value: 24.10, target: 100, color: '#22d3ee', icon: TrendingUp, trend: 'up' },
-  { label: 'Gastos fijos', value: 0, target: 500, color: '#a78bfa', icon: Minus, trend: 'flat' },
-  { label: 'Gastos variables', value: 0, target: 300, color: '#f59e0b', icon: TrendingDown, trend: 'flat' },
-  { label: 'Rendimientos', value: 0.08, target: 10, color: '#4ade80', icon: TrendingUp, trend: 'up' },
-]
-
-const TIPS = [
-  { id: 1, icon: '💡', text: 'Activa el redondeo automático para aumentar tu ahorro sin esfuerzo.' },
-  { id: 2, icon: '📊', text: 'Establece un presupuesto mensual de gastos para mejorar tu score.' },
-  { id: 3, icon: '🏆', text: 'Con $75 MXN más en ahorro, llegas al 25% de tu meta mensual.' },
-]
-
 export default function MobileFinancialHealth({ onBack, onOpenHAVI }) {
   const [tab, setTab] = useState('resumen')
+  const { screenCache } = useScreen()
+
+  // Extraer datos dinámicos del JSON de pantalla 'health'
+  const healthData = screenCache.health?.data || {}
+  const score = healthData.score_financiero ?? 0
+  const scoreLabel = healthData.score_label ?? 'Consultando...'
+  const balance = healthData.saldo_disponible ?? 0
+  const saving = healthData.ahorro_total ?? 0
+  const expenses = healthData.ahorro_potencial_mensual ?? 0 // Usado como proxy de ahorro posible
+  const categories = healthData.distribucion_gastos || []
 
   return (
     <div style={{
@@ -82,19 +78,17 @@ export default function MobileFinancialHealth({ onBack, onOpenHAVI }) {
       <div style={{ padding: '20px 20px 100px' }}>
         {tab === 'resumen' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {/* Score gauge */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '24px' }}>
               <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#9ca3af' }}>Tu score financiero</p>
-              <ScoreGauge score={SCORE} />
+              <ScoreGauge score={score} label={scoreLabel} />
             </div>
 
-            {/* Summary cards */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
               {[
-                { label: 'Saldo disponible', value: '$96.84', color: '#4db6e8' },
-                { label: 'Ahorro total', value: '$24.10', color: '#22d3ee' },
-                { label: 'Rendimiento', value: '$0.08', color: '#4ade80' },
-                { label: 'Gastos del mes', value: '$0.00', color: '#f59e0b' },
+                { label: 'Saldo disponible', value: `$${balance.toLocaleString()}`, color: '#4db6e8' },
+                { label: 'Ahorro total', value: `$${saving.toLocaleString()}`, color: '#22d3ee' },
+                { label: 'Ahorro potencial', value: `$${expenses.toLocaleString()}`, color: '#4ade80' },
+                { label: 'Gasto analizado', value: 'Completo', color: '#f59e0b' },
               ].map(card => (
                 <motion.div
                   key={card.label}
@@ -110,19 +104,16 @@ export default function MobileFinancialHealth({ onBack, onOpenHAVI }) {
                 </motion.div>
               ))}
             </div>
-
-
           </motion.div>
         )}
 
         {tab === 'categorías' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {CATEGORIES.map((cat, i) => {
-              const Icon = cat.icon
-              const pct = Math.min((cat.value / cat.target) * 100, 100)
+            {categories.length > 0 ? categories.map((cat, i) => {
+              const pct = (cat.pct * 100).toFixed(0)
               return (
                 <motion.div
-                  key={cat.label}
+                  key={cat.categoria}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
@@ -133,11 +124,11 @@ export default function MobileFinancialHealth({ onBack, onOpenHAVI }) {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Icon size={15} color={cat.color} />
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>{cat.label}</span>
+                      <TrendingDown size={15} color="#a78bfa" />
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: 'white', textTransform: 'capitalize' }}>{cat.categoria}</span>
                     </div>
-                    <span style={{ fontSize: '13px', color: cat.color, fontWeight: 600 }}>
-                      ${cat.value.toFixed(2)}
+                    <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 600 }}>
+                      ${cat.monto.toLocaleString()}
                     </span>
                   </div>
                   <div style={{ height: '6px', background: '#2a2a3a', borderRadius: '3px' }}>
@@ -145,24 +136,26 @@ export default function MobileFinancialHealth({ onBack, onOpenHAVI }) {
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
                       transition={{ duration: 0.9, delay: 0.2 + i * 0.08 }}
-                      style={{ height: '100%', background: cat.color, borderRadius: '3px' }}
+                      style={{ height: '100%', background: '#a78bfa', borderRadius: '3px' }}
                     />
                   </div>
                   <p style={{ margin: '6px 0 0', fontSize: '11px', color: '#555' }}>
-                    Meta: ${cat.target.toFixed(2)} MXN
+                    Representa el {pct}% de tus gastos analizados
                   </p>
                 </motion.div>
               )
-            })}
+            }) : (
+              <p style={{ textAlign: 'center', color: '#666', marginTop: '40px' }}>Cargando análisis de gastos...</p>
+            )}
           </motion.div>
         )}
 
         {tab === 'consejos' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#9ca3af' }}>Consejos personalizados de HAVI para ti</p>
-            {TIPS.map((tip, i) => (
+            <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#9ca3af' }}>Consejos de HAVI basados en tu perfil</p>
+            {(healthData.consejos || ["Analizando tus movimientos para darte mejores consejos..."]).map((text, i) => (
               <motion.div
-                key={tip.id}
+                key={i}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
@@ -173,10 +166,10 @@ export default function MobileFinancialHealth({ onBack, onOpenHAVI }) {
                   display: 'flex', gap: '14px', alignItems: 'flex-start', cursor: 'pointer',
                 }}
               >
-                <span style={{ fontSize: '22px' }}>{tip.icon}</span>
+                <span style={{ fontSize: '22px' }}>💡</span>
                 <div>
-                  <p style={{ margin: '0 0 6px', fontSize: '14px', color: 'white', lineHeight: 1.5 }}>{tip.text}</p>
-                  <span style={{ fontSize: '12px', color: '#a78bfa', fontWeight: 600 }}>Preguntarle a HAVI →</span>
+                  <p style={{ margin: '0 0 6px', fontSize: '14px', color: 'white', lineHeight: 1.5 }}>{text}</p>
+                  <span style={{ fontSize: '12px', color: '#a78bfa', fontWeight: 600 }}>Hablar con HAVI →</span>
                 </div>
               </motion.div>
             ))}

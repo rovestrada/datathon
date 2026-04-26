@@ -1,29 +1,29 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronLeft, Download, Filter } from 'lucide-react'
+import { useScreen } from '../../context/ScreenContext'
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril']
 
-const TRANSACTIONS = [
-  {
-    id: 1, date: '25 abr', desc: 'Ahorro inmediato', amount: +0.08,
-    type: 'rendimiento', icon: '📈',
-  },
-  {
-    id: 2, date: '24 abr', desc: 'Ingreso inicial', amount: +96.84,
-    type: 'abono', icon: '💰',
-  },
-  {
-    id: 3, date: '22 abr', desc: 'Referido activo', amount: 0,
-    type: 'neutro', icon: '👥',
-  },
-]
-
 export default function MobileStatement({ onBack, onOpenHAVI }) {
+  const { screenCache } = useScreen()
   const [month, setMonth] = useState('Abril')
   const [filterOpen, setFilterOpen] = useState(false)
 
-  const total = TRANSACTIONS.reduce((sum, t) => sum + t.amount, 0)
+  // Datos reales desde el contexto (usamos home como fuente de movimientos recientes)
+  const homeData = screenCache.home?.data || {}
+  const rawTx = homeData.movimientos_recientes || []
+  
+  const TRANSACTIONS = rawTx.map((t, i) => ({
+    id: i,
+    date: t.fecha,
+    desc: t.comercio,
+    amount: t.monto,
+    type: t.monto > 0 ? 'abono' : 'cargo',
+    icon: t.monto > 0 ? '💰' : '🛍️'
+  }))
+
+  const total = homeData.saldo_disponible ?? 0
 
   return (
     <div style={{
@@ -73,7 +73,7 @@ export default function MobileStatement({ onBack, onOpenHAVI }) {
       <div style={{ margin: '0 20px 20px', background: '#1a1a2a', borderRadius: '14px', padding: '16px', border: '1px solid #2a2a3a' }}>
         <p style={{ margin: '0 0 4px', fontSize: '12px', color: '#6b7280' }}>Cuenta HEY – *001-5 · {month} 2026</p>
         <p style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: '#4db6e8' }}>
-          ${total.toFixed(2)} MXN
+          ${total.toLocaleString('en-US', { minimumFractionDigits: 2 })} MXN
         </p>
         <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#555' }}>Saldo total del período</p>
       </div>
@@ -104,7 +104,7 @@ export default function MobileStatement({ onBack, onOpenHAVI }) {
               <span style={{ fontSize: '22px' }}>{tx.icon}</span>
               <div style={{ flex: 1 }}>
                 <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'white' }}>{tx.desc}</p>
-                <p style={{ margin: '3px 0 0', fontSize: '11px', color: '#555' }}>{tx.date} 2026</p>
+                <p style={{ margin: '3px 0 0', fontSize: '11px', color: '#555' }}>{tx.date}</p>
               </div>
               <p style={{
                 margin: 0, fontSize: '14px', fontWeight: 700,
