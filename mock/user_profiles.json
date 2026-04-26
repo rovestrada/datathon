@@ -1,0 +1,242 @@
+[
+  {
+    "user_id": "USR-00042",
+    "password": "demo",
+    "archetype_name": "Joven Profesional Urbano",
+    "cluster_id": 2,
+    "anomaly_score": 0.12,
+    "top_features": [
+      "gasto_restaurantes_alto",
+      "sin_inversion_activa",
+      "score_buro_bueno"
+    ],
+    "recent_transactions": [
+      {
+        "fecha": "2025-10-05",
+        "comercio": "Spotify",
+        "monto": 99.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente"
+      },
+      {
+        "fecha": "2025-10-04",
+        "comercio": "Restaurante Toks",
+        "monto": 340.0,
+        "categoria": "restaurante",
+        "tipo": "compra"
+      },
+      {
+        "fecha": "2025-10-03",
+        "comercio": "Netflix",
+        "monto": 169.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente"
+      },
+      {
+        "fecha": "2025-10-01",
+        "comercio": "OXXO",
+        "monto": 250.0,
+        "categoria": "supermercado",
+        "tipo": "compra"
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T06",
+      "name": "Inversión desaprovechada",
+      "opening_message": "Hola 👋 Tienes $12,400 en tu cuenta que no está generando rendimiento. Con Hey Inversiones podrías ganar aprox. $99/mes sin hacer nada. ¿Lo exploramos?",
+      "ctas": ["Ver inversión Hey", "Simular rendimiento", "Ahora no"],
+      "pet_skin": "cat_orange"
+    }
+  },
+  {
+    "user_id": "USR-00101",
+    "password": "demo",
+    "archetype_name": "Estudiante Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.08,
+    "top_features": [
+      "gasto_delivery_frecuente",
+      "sin_hey_pro",
+      "compras_mensuales_altas"
+    ],
+    "recent_transactions": [
+      {
+        "fecha": "2025-10-05",
+        "comercio": "Rappi",
+        "monto": 285.0,
+        "categoria": "delivery",
+        "tipo": "compra"
+      },
+      {
+        "fecha": "2025-10-04",
+        "comercio": "Uber Eats",
+        "monto": 210.0,
+        "categoria": "delivery",
+        "tipo": "compra"
+      },
+      {
+        "fecha": "2025-10-03",
+        "comercio": "Liverpool",
+        "monto": 1200.0,
+        "categoria": "ropa_accesorios",
+        "tipo": "compra"
+      },
+      {
+        "fecha": "2025-10-02",
+        "comercio": "Chedraui",
+        "monto": 450.0,
+        "categoria": "supermercado",
+        "tipo": "compra"
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T03",
+      "name": "Oportunidad Hey Pro",
+      "opening_message": "Hola 👋 Con lo que compraste este mes, Hey Pro te habría dado $62 de cashback automático. Son $744 al año de regreso a tu bolsillo. ¿Te cuento cómo funciona?",
+      "ctas": ["Quiero Hey Pro", "Ver beneficios", "Ahora no"],
+      "pet_skin": "cat_orange"
+    }
+  },
+  {
+    "user_id": "USR-00207",
+    "password": "demo",
+    "archetype_name": "Adulto Precavido",
+    "cluster_id": 4,
+    "anomaly_score": 0.71,
+    "top_features": [
+      "pago_rechazado_reciente",
+      "saldo_bajo_frecuente",
+      "gastos_servicios_altos"
+    ],
+    "recent_transactions": [
+      {
+        "fecha": "2025-10-05",
+        "comercio": "Superama",
+        "monto": 876.0,
+        "categoria": "supermercado",
+        "tipo": "compra",
+        "estatus": "no_procesada",
+        "motivo": "saldo_insuficiente"
+      },
+      {
+        "fecha": "2025-10-04",
+        "comercio": "CFE",
+        "monto": 420.0,
+        "categoria": "gobierno",
+        "tipo": "pago_servicio"
+      },
+      {
+        "fecha": "2025-10-03",
+        "comercio": "Telmex",
+        "monto": 399.0,
+        "categoria": "gobierno",
+        "tipo": "pago_servicio"
+      },
+      {
+        "fecha": "2025-10-02",
+        "comercio": "OXXO",
+        "monto": 200.0,
+        "categoria": "supermercado",
+        "tipo": "deposito_oxxo"
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido reciente",
+      "opening_message": "Hola 👋 Ayer tu pago de $876 en Superama no se procesó porque no tenías saldo suficiente. ¿Quieres que active una alerta cuando tu saldo baje de cierto monto?",
+      "ctas": ["Activar alerta de saldo", "Ver mi saldo ahora", "Ahora no"],
+      "pet_skin": "cat_purple"
+    }
+  },
+  {
+    "user_id": "USR-00315",
+    "password": "demo",
+    "archetype_name": "Usuario Inactivo",
+    "cluster_id": 5,
+    "anomaly_score": 0.05,
+    "top_features": [
+      "dias_sin_login_alto",
+      "satisfaccion_baja",
+      "pocas_transacciones_recientes"
+    ],
+    "recent_transactions": [
+      {
+        "fecha": "2025-09-10",
+        "comercio": "Farmacias del Ahorro",
+        "monto": 180.0,
+        "categoria": "salud",
+        "tipo": "compra"
+      },
+      {
+        "fecha": "2025-09-05",
+        "comercio": "Walmart",
+        "monto": 640.0,
+        "categoria": "supermercado",
+        "tipo": "compra"
+      },
+      {
+        "fecha": "2025-08-28",
+        "comercio": "Retiro cajero",
+        "monto": 500.0,
+        "categoria": "transferencia",
+        "tipo": "retiro_cajero"
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T08",
+      "name": "Inactividad de app",
+      "opening_message": "Hola, hace 25 días que no te vemos por aquí 👋 ¿Hay algo que no esté funcionando bien o en lo que te podamos ayudar?",
+      "ctas": ["Tengo una duda", "Ver novedades", "Ahora no"],
+      "pet_skin": "cat_gray"
+    }
+  },
+  {
+    "user_id": "USR-00489",
+    "password": "demo",
+    "archetype_name": "Emprendedor Digital",
+    "cluster_id": 3,
+    "anomaly_score": 0.19,
+    "top_features": [
+      "multiples_suscripciones_activas",
+      "uso_bajo_de_suscripciones",
+      "ingreso_variable"
+    ],
+    "recent_transactions": [
+      {
+        "fecha": "2025-10-05",
+        "comercio": "Adobe Creative",
+        "monto": 599.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente"
+      },
+      {
+        "fecha": "2025-10-05",
+        "comercio": "Notion",
+        "monto": 149.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente"
+      },
+      {
+        "fecha": "2025-10-05",
+        "comercio": "GitHub Copilot",
+        "monto": 199.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente"
+      },
+      {
+        "fecha": "2025-10-03",
+        "comercio": "Amazon Web Services",
+        "monto": 890.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente"
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T02",
+      "name": "Suscripciones dormidas",
+      "opening_message": "Hola 👋 Detecté que tienes 4 suscripciones activas que suman $1,837/mes. Notion y GitHub Copilot no muestran uso reciente. ¿Las revisamos juntos?",
+      "ctas": ["Ver mis suscripciones", "Cancelar las que no uso", "Ahora no"],
+      "pet_skin": "cat_green"
+    }
+  }
+]
