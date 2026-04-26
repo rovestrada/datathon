@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Loader2, Landmark } from 'lucide-react'
 import HaviLogo from './HaviLogo'
+import { API_BASE } from '../utils/apiConfig'
 import React from 'react'
 
 let msgCounter = 1
@@ -115,7 +116,7 @@ const ChatbotHAVI = memo(function ChatbotHAVI({
     setCtasDone(true)
 
     try {
-      const res = await fetch('/api/chat/message', {
+      const res = await fetch(`${API_BASE}/chat/message`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

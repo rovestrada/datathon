@@ -1,18 +1,27 @@
 import base64
 import json
+import os
 from pathlib import Path
 
 # Índice en memoria: { user_id: dict }
 _profiles: dict[str, dict] = {}
 
+# Path del JSON relativo a este archivo (funciona desde cualquier CWD)
+_DEFAULT_PATH = Path(__file__).parent.parent.parent / "mock" / "user_profiles.json"
 
-def load_profiles(path: str = "../mock/user_profiles.json") -> None:
-    """Carga (o recarga) los perfiles desde el JSON. Llámala al arrancar y en /admin/reload."""
+
+def load_profiles(path: str | None = None) -> None:
+    """Carga (o recarga) los perfiles. Soporta USER_PROFILES_B64 para Railway."""
     global _profiles
-    raw = Path(path).read_text(encoding="utf-8")
-    data: list[dict] = json.loads(raw)
+    b64 = os.getenv("USER_PROFILES_B64")
+    if b64:
+        data: list[dict] = json.loads(base64.b64decode(b64).decode("utf-8"))
+        print(f"[loader] {len(data)} perfiles cargados desde USER_PROFILES_B64")
+    else:
+        p = Path(path) if path else _DEFAULT_PATH
+        data = json.loads(p.read_text(encoding="utf-8"))
+        print(f"[loader] {len(data)} perfiles cargados desde '{p}'")
     _profiles = {u["user_id"]: u for u in data}
-    print(f"[loader] {len(_profiles)} perfiles cargados desde '{path}'")
 
 
 def get_profile(user_id: str) -> dict | None:

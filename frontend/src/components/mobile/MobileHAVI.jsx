@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Send, Loader2 } from 'lucide-react'
 import HaviLogo from '../HaviLogo'
 import { getGifUrl, PET_TYPES } from './petSprites'
+import { API_BASE } from '../../utils/apiConfig'
 import React from 'react'
 
 let msgId = 10
@@ -50,7 +51,7 @@ export default function MobileHAVI({ customerId, userName, token, chatOpenData, 
     setCtasDone(true)
 
     try {
-      const res = await fetch('/api/chat/message', {
+      const res = await fetch(`${API_BASE}/chat/message`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

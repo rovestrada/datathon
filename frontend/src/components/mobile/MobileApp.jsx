@@ -4,6 +4,7 @@ import { Home, CreditCard, ArrowLeftRight, Inbox } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { usePet } from '../../context/PetContext'
 import { useScreen } from '../../context/ScreenContext'
+import { API_BASE } from '../../utils/apiConfig'
 
 import MobileLogin from './MobileLogin'
 import MobileHome from './MobileHome'
@@ -132,7 +133,7 @@ export default function MobileApp() {
     const apiId = SCREEN_API_MAP[screenId] ?? screenId
     if (screenCache[apiId]) return
     try {
-      const res = await fetch(`/api/screen/${apiId}?user_id=${customerId}`, {
+      const res = await fetch(`${API_BASE}/screen/${apiId}?user_id=${customerId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (res.ok) cacheScreenData(apiId, await res.json())
