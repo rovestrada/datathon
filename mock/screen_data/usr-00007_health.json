@@ -1,0 +1,28 @@
+{
+  "screen_id": "health",
+  "user_id": "USR-00007",
+  "havi_context": "El usuario ve su salud financiera. Score: 90/100. Utilización de crédito: 25%. El sistema detecta que el usuario está sin patrones de uso atípico.",
+  "havi_context_short": "Score financiero: 90/100 📊",
+  "data": {
+    "score_financiero": 90,
+    "score_label": "Bueno",
+    "score_color": "#22d3ee",
+    "utilizacion_credito_pct": 0.24635,
+    "patron_uso_atipico": false,
+    "anomaly_score": 0.0849,
+    "racha_dias_sin_rechazo": 15,
+    "ahorro_potencial_mensual": 38039.37,
+    "distribucion_gastos": [
+      {
+        "categoria": "otros",
+        "pct": 1.0,
+        "monto": 316994.77999999997
+      }
+    ],
+    "vs_cluster": [],
+    "consejos": [
+      "Sigue ahorrando",
+      "Usa menos tu crédito"
+    ]
+  }
+}

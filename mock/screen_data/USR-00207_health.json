@@ -2,7 +2,7 @@
   "screen_id": "health",
   "user_id": "USR-00207",
   "havi_context": "Score bajo por rechazos recientes.",
-  "havi_context_short": "Score: 42/100 \ud83d\udcc9",
+  "havi_context_short": "Score: 42/100 📉",
   "data": {
     "score_financiero": 42,
     "score_label": "Mejorable",

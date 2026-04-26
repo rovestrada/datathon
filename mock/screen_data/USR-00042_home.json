@@ -1,8 +1,8 @@
 {
   "screen_id": "home",
   "user_id": "USR-00042",
-  "havi_context": "Saldo de $12,400. Inversi\u00f3n sugerida.",
-  "havi_context_short": "Saldo: $12,400 \ud83d\udcb0",
+  "havi_context": "Saldo de $12,400. Inversión sugerida.",
+  "havi_context_short": "Saldo: $12,400 💰",
   "data": {
     "saldo_disponible": 12400.0,
     "cashback_acumulado": 87.5,

@@ -1,0 +1,21 @@
+{
+  "screen_id": "profile",
+  "user_id": "USR-00005",
+  "havi_context": "El usuario esta en profile. Saldo: $43,326. Score: 77. Trigger: Pago fallido.",
+  "havi_context_short": "Saldo: $43,326",
+  "data": {
+    "nombre_display": "Cliente Hey",
+    "archetype_name": "Heavy User Crédito",
+    "es_hey_pro": false,
+    "score_buro": 533,
+    "antiguedad_dias": 816,
+    "canal_apertura": "App",
+    "preferencia_canal": "app_ios",
+    "nivel_satisfaccion": 9,
+    "num_productos_activos": 3,
+    "tiene_seguro": false,
+    "nomina_domiciliada": true,
+    "recibe_remesas": false,
+    "idioma_preferido": "es_MX"
+  }
+}

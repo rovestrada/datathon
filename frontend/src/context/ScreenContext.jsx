@@ -18,6 +18,13 @@ export function ScreenProvider({ children }) {
     setScreenCache(prev => ({ ...prev, [screenId]: data }))
   }, [])
 
+  // Limpiar todo el cache (llamar al hacer logout)
+  const clearScreenCache = useCallback(() => {
+    setScreenCache({})
+    setCurrentScreen('inicio')
+    setScreenLoading(false)
+  }, [])
+
   return (
     <ScreenContext.Provider value={{
       currentScreen,
@@ -25,6 +32,7 @@ export function ScreenProvider({ children }) {
       screenLoading,
       navigateTo,
       cacheScreenData,
+      clearScreenCache, // ← Exponer función
       setScreenLoading,
     }}>
       {children}

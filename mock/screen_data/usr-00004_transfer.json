@@ -1,0 +1,13 @@
+{
+  "screen_id": "transfer",
+  "user_id": "USR-00004",
+  "havi_context": "El usuario quiere transferir. Saldo disponible: $14,100. Límite diario de $50,000 disponible.",
+  "havi_context_short": "Saldo para transferir: $14,100 💸",
+  "data": {
+    "saldo_disponible": 14100.48,
+    "limite_diario": 50000.0,
+    "transferido_hoy": 0.0,
+    "destinatarios_frecuentes": [],
+    "historial_reciente": []
+  }
+}

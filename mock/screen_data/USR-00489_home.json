@@ -2,7 +2,7 @@
   "screen_id": "home",
   "user_id": "USR-00489",
   "havi_context": "El usuario paga $1,837 en suscripciones al mes. Tiene $4,500 en saldo.",
-  "havi_context_short": "Pagas $1,837 en apps al mes \ud83d\udcf1",
+  "havi_context_short": "Pagas $1,837 en apps al mes 📱",
   "data": {
     "saldo_disponible": 4500.0,
     "cashback_acumulado": 45.0,

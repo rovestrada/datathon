@@ -1,272 +1,572 @@
 [
   {
-    "user_id": "USR-00042",
+    "user_id": "USR-00001",
     "password": "demo",
-    "archetype_name": "Joven Profesional Urbano",
+    "archetype_name": "Heavy User Crédito",
     "cluster_id": 2,
-    "anomaly_score": 0.12,
+    "anomaly_score": 0.3618,
     "top_features": [
-      "gasto_restaurantes_alto",
-      "sin_inversion_activa",
-      "score_buro_bueno"
+      "edad_bajo",
+      "antiguedad_dias_alto",
+      "utilizacion_credito_pct_bajo"
     ],
+    "default_pet": {
+      "petType": "panda",
+      "petVariant": "brown"
+    },
     "recent_transactions": [
       {
-        "fecha": "2025-10-05",
-        "comercio": "Spotify",
-        "monto": 99.0,
-        "categoria": "servicios_digitales",
-        "tipo": "cargo_recurrente"
-      },
-      {
-        "fecha": "2025-10-04",
-        "comercio": "Restaurante Toks",
-        "monto": 340.0,
+        "fecha": "2025-11-22",
+        "comercio": "Eats MX",
+        "monto": 734.51,
         "categoria": "restaurante",
-        "tipo": "compra"
-      },
-      {
-        "fecha": "2025-10-03",
-        "comercio": "Netflix",
-        "monto": 169.0,
-        "categoria": "servicios_digitales",
-        "tipo": "cargo_recurrente"
-      },
-      {
-        "fecha": "2025-10-01",
-        "comercio": "OXXO",
-        "monto": 250.0,
-        "categoria": "supermercado",
-        "tipo": "compra"
-      }
-    ],
-    "trigger_active": {
-      "trigger_id": "T06",
-      "name": "Inversión desaprovechada",
-      "opening_message": "Hola 👋 Tienes $12,400 en tu cuenta que no está generando rendimiento. Con Hey Inversiones podrías ganar aprox. $99/mes sin hacer nada. ¿Lo exploramos?",
-      "ctas": [
-        "Ver inversión Hey",
-        "Simular rendimiento",
-        "Ahora no"
-      ],
-      "pet_skin": "cat_orange"
-    },
-    "full_name": "Ivan Guerrero",
-    "email": "ivan.g@hey.inc"
-  },
-  {
-    "user_id": "USR-00101",
-    "password": "demo",
-    "archetype_name": "Estudiante Digital",
-    "cluster_id": 1,
-    "anomaly_score": 0.08,
-    "top_features": [
-      "gasto_delivery_frecuente",
-      "sin_hey_pro",
-      "compras_mensuales_altas"
-    ],
-    "recent_transactions": [
-      {
-        "fecha": "2025-10-05",
-        "comercio": "Rappi",
-        "monto": 285.0,
-        "categoria": "delivery",
-        "tipo": "compra"
-      },
-      {
-        "fecha": "2025-10-04",
-        "comercio": "Uber Eats",
-        "monto": 210.0,
-        "categoria": "delivery",
-        "tipo": "compra"
-      },
-      {
-        "fecha": "2025-10-03",
-        "comercio": "Liverpool",
-        "monto": 1200.0,
-        "categoria": "ropa_accesorios",
-        "tipo": "compra"
-      },
-      {
-        "fecha": "2025-10-02",
-        "comercio": "Chedraui",
-        "monto": 450.0,
-        "categoria": "supermercado",
-        "tipo": "compra"
-      }
-    ],
-    "trigger_active": {
-      "trigger_id": "T03",
-      "name": "Oportunidad Hey Pro",
-      "opening_message": "Hola 👋 Con lo que compraste este mes, Hey Pro te habría dado $62 de cashback automático. Son $744 al año de regreso a tu bolsillo. ¿Te cuento cómo funciona?",
-      "ctas": [
-        "Quiero Hey Pro",
-        "Ver beneficios",
-        "Ahora no"
-      ],
-      "pet_skin": "cat_orange"
-    },
-    "full_name": "Mariana Soto",
-    "email": "mariana.s@hey.inc"
-  },
-  {
-    "user_id": "USR-00207",
-    "password": "demo",
-    "archetype_name": "Adulto Precavido",
-    "cluster_id": 4,
-    "anomaly_score": 0.71,
-    "top_features": [
-      "pago_rechazado_reciente",
-      "saldo_bajo_frecuente",
-      "gastos_servicios_altos"
-    ],
-    "recent_transactions": [
-      {
-        "fecha": "2025-10-05",
-        "comercio": "Superama",
-        "monto": 876.0,
-        "categoria": "supermercado",
         "tipo": "compra",
-        "estatus": "no_procesada",
-        "motivo": "saldo_insuficiente"
+        "estatus": null,
+        "motivo": null
       },
       {
-        "fecha": "2025-10-04",
-        "comercio": "CFE",
-        "monto": 420.0,
-        "categoria": "gobierno",
-        "tipo": "pago_servicio"
+        "fecha": "2025-11-20",
+        "comercio": "NewsDigital MX",
+        "monto": 419.57,
+        "categoria": "servicios_digitales",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
       },
       {
-        "fecha": "2025-10-03",
-        "comercio": "Telmex",
-        "monto": 399.0,
-        "categoria": "gobierno",
-        "tipo": "pago_servicio"
-      },
-      {
-        "fecha": "2025-10-02",
-        "comercio": "OXXO",
-        "monto": 200.0,
-        "categoria": "supermercado",
-        "tipo": "deposito_oxxo"
+        "fecha": "2025-11-12",
+        "comercio": "pago_credito",
+        "monto": 300.0,
+        "categoria": "transferencia",
+        "tipo": "pago_credito",
+        "estatus": null,
+        "motivo": null
       }
     ],
     "trigger_active": {
       "trigger_id": "T01",
-      "name": "Pago fallido reciente",
-      "opening_message": "Hola 👋 Ayer tu pago de $876 en Superama no se procesó porque no tenías saldo suficiente. ¿Quieres que active una alerta cuando tu saldo baje de cierto monto?",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $24,010. ¿Te ayudo?",
       "ctas": [
-        "Activar alerta de saldo",
-        "Ver mi saldo ahora",
+        "Ver motivo",
+        "Reintentar",
         "Ahora no"
-      ],
-      "pet_skin": "cat_purple"
+      ]
     },
-    "full_name": "Roberto Estrada",
-    "email": "roberto.e@hey.inc"
+    "full_name": "Juan Pérez",
+    "email": "juan.p@hey.inc"
   },
   {
-    "user_id": "USR-00315",
+    "user_id": "USR-00002",
     "password": "demo",
-    "archetype_name": "Usuario Inactivo",
-    "cluster_id": 5,
-    "anomaly_score": 0.05,
+    "archetype_name": "Joven Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.3459,
     "top_features": [
-      "dias_sin_login_alto",
-      "satisfaccion_baja",
-      "pocas_transacciones_recientes"
+      "edad_bajo",
+      "antiguedad_dias_alto",
+      "score_buro_alto"
     ],
+    "default_pet": {
+      "petType": "fox",
+      "petVariant": "red"
+    },
     "recent_transactions": [
       {
-        "fecha": "2025-09-10",
-        "comercio": "Farmacias del Ahorro",
-        "monto": 180.0,
-        "categoria": "salud",
-        "tipo": "compra"
+        "fecha": "2025-11-27",
+        "comercio": "BurgerZone MX",
+        "monto": 403.14,
+        "categoria": "restaurante",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
       },
       {
-        "fecha": "2025-09-05",
-        "comercio": "Walmart",
-        "monto": 640.0,
-        "categoria": "supermercado",
-        "tipo": "compra"
+        "fecha": "2025-11-25",
+        "comercio": "NewsDigital MX",
+        "monto": 171.73,
+        "categoria": "servicios_digitales",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
       },
       {
-        "fecha": "2025-08-28",
-        "comercio": "Retiro cajero",
-        "monto": 500.0,
+        "fecha": "2025-11-16",
+        "comercio": "ComiDoor",
+        "monto": 251.4,
+        "categoria": "restaurante",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $24,830. ¿Te ayudo?",
+      "ctas": [
+        "Ver motivo",
+        "Reintentar",
+        "Ahora no"
+      ]
+    },
+    "full_name": "Elena García",
+    "email": "elena.g@hey.inc"
+  },
+  {
+    "user_id": "USR-00003",
+    "password": "demo",
+    "archetype_name": "Joven Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.2789,
+    "top_features": [
+      "edad_bajo",
+      "score_buro_bajo",
+      "antiguedad_dias_alto"
+    ],
+    "default_pet": {
+      "petType": "fox",
+      "petVariant": "red"
+    },
+    "recent_transactions": [
+      {
+        "fecha": "2025-11-25",
+        "comercio": "IMSS Módulo",
+        "monto": 151.93,
+        "categoria": "gobierno",
+        "tipo": "pago_servicio",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-18",
+        "comercio": "MusicFlow MX",
+        "monto": 99.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-15",
+        "comercio": "Gobierno MX Pago",
+        "monto": 2413.07,
+        "categoria": "gobierno",
+        "tipo": "pago_servicio",
+        "estatus": null,
+        "motivo": null
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $24,540. ¿Te ayudo?",
+      "ctas": [
+        "Ver motivo",
+        "Reintentar",
+        "Ahora no"
+      ]
+    },
+    "full_name": "Luis Rodríguez",
+    "email": "luis.r@hey.inc"
+  },
+  {
+    "user_id": "USR-00004",
+    "password": "demo",
+    "archetype_name": "Ahorrador Consolidado",
+    "cluster_id": 0,
+    "anomaly_score": 0.4746,
+    "top_features": [
+      "score_buro_alto",
+      "edad_bajo",
+      "ingreso_mensual_alto"
+    ],
+    "default_pet": {
+      "petType": "dog",
+      "petVariant": "white"
+    },
+    "recent_transactions": [
+      {
+        "fecha": "2025-11-25",
+        "comercio": "Taquería El Norteño",
+        "monto": 2338.12,
+        "categoria": "restaurante",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-23",
+        "comercio": "abono_inversion",
+        "monto": 16000.0,
         "categoria": "transferencia",
-        "tipo": "retiro_cajero"
+        "tipo": "abono_inversion",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-09",
+        "comercio": "MusicFlow MX",
+        "monto": 299.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente",
+        "estatus": null,
+        "motivo": null
       }
     ],
     "trigger_active": {
-      "trigger_id": "T08",
-      "name": "Inactividad de app",
-      "opening_message": "Hola, hace 25 días que no te vemos por aquí 👋 ¿Hay algo que no esté funcionando bien o en lo que te podamos ayudar?",
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $55,000. ¿Te ayudo?",
       "ctas": [
-        "Tengo una duda",
-        "Ver novedades",
+        "Ver motivo",
+        "Reintentar",
         "Ahora no"
-      ],
-      "pet_skin": "cat_gray"
+      ]
     },
-    "full_name": "Lucía Méndez",
-    "email": "lucia.m@hey.inc"
+    "full_name": "Ana Martínez",
+    "email": "ana.m@hey.inc"
   },
   {
-    "user_id": "USR-00489",
+    "user_id": "USR-00005",
     "password": "demo",
-    "archetype_name": "Emprendedor Digital",
-    "cluster_id": 3,
-    "anomaly_score": 0.19,
+    "archetype_name": "Heavy User Crédito",
+    "cluster_id": 2,
+    "anomaly_score": 0.1672,
     "top_features": [
-      "multiples_suscripciones_activas",
-      "uso_bajo_de_suscripciones",
-      "ingreso_variable"
+      "edad_bajo",
+      "ingreso_mensual_alto",
+      "score_buro_alto"
     ],
+    "default_pet": {
+      "petType": "panda",
+      "petVariant": "brown"
+    },
     "recent_transactions": [
       {
-        "fecha": "2025-10-05",
-        "comercio": "Adobe Creative",
-        "monto": 599.0,
-        "categoria": "servicios_digitales",
-        "tipo": "cargo_recurrente"
+        "fecha": "2025-11-16",
+        "comercio": "La Fogata",
+        "monto": 503.89,
+        "categoria": "restaurante",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
       },
       {
-        "fecha": "2025-10-05",
-        "comercio": "Notion",
-        "monto": 149.0,
-        "categoria": "servicios_digitales",
-        "tipo": "cargo_recurrente"
+        "fecha": "2025-11-13",
+        "comercio": "transf_salida",
+        "monto": 17870.0,
+        "categoria": "transferencia",
+        "tipo": "transf_salida",
+        "estatus": null,
+        "motivo": null
       },
       {
-        "fecha": "2025-10-05",
-        "comercio": "GitHub Copilot",
-        "monto": 199.0,
+        "fecha": "2025-11-12",
+        "comercio": "CloudDrive MX",
+        "monto": 449.0,
         "categoria": "servicios_digitales",
-        "tipo": "cargo_recurrente"
-      },
-      {
-        "fecha": "2025-10-03",
-        "comercio": "Amazon Web Services",
-        "monto": 890.0,
-        "categoria": "servicios_digitales",
-        "tipo": "cargo_recurrente"
+        "tipo": "cargo_recurrente",
+        "estatus": null,
+        "motivo": null
       }
     ],
     "trigger_active": {
-      "trigger_id": "T02",
-      "name": "Suscripciones dormidas",
-      "opening_message": "Hola 👋 Detecté que tienes 4 suscripciones activas que suman $1,837/mes. Notion y GitHub Copilot no muestran uso reciente. ¿Las revisamos juntos?",
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $24,520. ¿Te ayudo?",
       "ctas": [
-        "Ver mis suscripciones",
-        "Cancelar las que no uso",
+        "Ver motivo",
+        "Reintentar",
         "Ahora no"
-      ],
-      "pet_skin": "cat_green"
+      ]
     },
-    "full_name": "Carlos Slim",
-    "email": "carlos.s@hey.inc"
+    "full_name": "Diego Hernández",
+    "email": "diego.h@hey.inc"
+  },
+  {
+    "user_id": "USR-00006",
+    "password": "demo",
+    "archetype_name": "Joven Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.1342,
+    "top_features": [
+      "edad_bajo",
+      "score_buro_bajo",
+      "antiguedad_dias_alto"
+    ],
+    "default_pet": {
+      "petType": "fox",
+      "petVariant": "red"
+    },
+    "recent_transactions": [
+      {
+        "fecha": "2025-11-25",
+        "comercio": "DivertidoPark",
+        "monto": 327.16,
+        "categoria": "entretenimiento",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-24",
+        "comercio": "transf_entrada",
+        "monto": 930.0,
+        "categoria": "transferencia",
+        "tipo": "transf_entrada",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-17",
+        "comercio": "pago_credito",
+        "monto": 1100.0,
+        "categoria": "transferencia",
+        "tipo": "pago_credito",
+        "estatus": null,
+        "motivo": null
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $19,140. ¿Te ayudo?",
+      "ctas": [
+        "Ver motivo",
+        "Reintentar",
+        "Ahora no"
+      ]
+    },
+    "full_name": "Sofía López",
+    "email": "sofia.l@hey.inc"
+  },
+  {
+    "user_id": "USR-00007",
+    "password": "demo",
+    "archetype_name": "Joven Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.0849,
+    "top_features": [
+      "antiguedad_dias_alto",
+      "gasto_total_alto",
+      "ingreso_mensual_alto"
+    ],
+    "default_pet": {
+      "petType": "fox",
+      "petVariant": "red"
+    },
+    "recent_transactions": [
+      {
+        "fecha": "2025-12-01",
+        "comercio": "transf_entrada",
+        "monto": 10600.0,
+        "categoria": "transferencia",
+        "tipo": "transf_entrada",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-27",
+        "comercio": "BiciShare MX",
+        "monto": 1648.44,
+        "categoria": "transporte",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-15",
+        "comercio": "transf_entrada",
+        "monto": 7750.0,
+        "categoria": "transferencia",
+        "tipo": "transf_entrada",
+        "estatus": null,
+        "motivo": null
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $54,000. ¿Te ayudo?",
+      "ctas": [
+        "Ver motivo",
+        "Reintentar",
+        "Ahora no"
+      ]
+    },
+    "full_name": "Javier González",
+    "email": "javier.g@hey.inc"
+  },
+  {
+    "user_id": "USR-00008",
+    "password": "demo",
+    "archetype_name": "Joven Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.07,
+    "top_features": [
+      "utilizacion_credito_pct_alto",
+      "ingreso_mensual_bajo",
+      "edad_bajo"
+    ],
+    "default_pet": {
+      "petType": "fox",
+      "petVariant": "red"
+    },
+    "recent_transactions": [
+      {
+        "fecha": "2025-11-27",
+        "comercio": "CaféRojo",
+        "monto": 524.7,
+        "categoria": "restaurante",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-22",
+        "comercio": "ComiDoor",
+        "monto": 145.22,
+        "categoria": "restaurante",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-19",
+        "comercio": "NewsDigital MX",
+        "monto": 99.0,
+        "categoria": "servicios_digitales",
+        "tipo": "cargo_recurrente",
+        "estatus": null,
+        "motivo": null
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $24,950. ¿Te ayudo?",
+      "ctas": [
+        "Ver motivo",
+        "Reintentar",
+        "Ahora no"
+      ]
+    },
+    "full_name": "Valeria Sánchez",
+    "email": "valeria.s@hey.inc"
+  },
+  {
+    "user_id": "USR-00009",
+    "password": "demo",
+    "archetype_name": "Joven Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.3404,
+    "top_features": [
+      "edad_alto",
+      "antiguedad_dias_bajo",
+      "utilizacion_credito_pct_alto"
+    ],
+    "default_pet": {
+      "petType": "fox",
+      "petVariant": "red"
+    },
+    "recent_transactions": [
+      {
+        "fecha": "2025-11-22",
+        "comercio": "transf_salida",
+        "monto": 22330.0,
+        "categoria": "transferencia",
+        "tipo": "transf_salida",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-19",
+        "comercio": "abono_inversion",
+        "monto": 37500.0,
+        "categoria": "transferencia",
+        "tipo": "abono_inversion",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-10-07",
+        "comercio": "abono_inversion",
+        "monto": 24000.0,
+        "categoria": "transferencia",
+        "tipo": "abono_inversion",
+        "estatus": null,
+        "motivo": null
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $37,500. ¿Te ayudo?",
+      "ctas": [
+        "Ver motivo",
+        "Reintentar",
+        "Ahora no"
+      ]
+    },
+    "full_name": "Andrés Torres",
+    "email": "andres.t@hey.inc"
+  },
+  {
+    "user_id": "USR-00010",
+    "password": "demo",
+    "archetype_name": "Joven Digital",
+    "cluster_id": 1,
+    "anomaly_score": 0.1295,
+    "top_features": [
+      "antiguedad_dias_bajo",
+      "edad_bajo",
+      "utilizacion_credito_pct_bajo"
+    ],
+    "default_pet": {
+      "petType": "fox",
+      "petVariant": "red"
+    },
+    "recent_transactions": [
+      {
+        "fecha": "2025-11-27",
+        "comercio": "ElectroByte",
+        "monto": 771.45,
+        "categoria": "tecnologia",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-20",
+        "comercio": "CineMax MX",
+        "monto": 217.8,
+        "categoria": "entretenimiento",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      },
+      {
+        "fecha": "2025-11-15",
+        "comercio": "GamerPass",
+        "monto": 732.57,
+        "categoria": "servicios_digitales",
+        "tipo": "compra",
+        "estatus": null,
+        "motivo": null
+      }
+    ],
+    "trigger_active": {
+      "trigger_id": "T01",
+      "name": "Pago fallido",
+      "opening_message": "Detecté un pago fallido de $24,930. ¿Te ayudo?",
+      "ctas": [
+        "Ver motivo",
+        "Reintentar",
+        "Ahora no"
+      ]
+    },
+    "full_name": "Camila Ramírez",
+    "email": "camila.r@hey.inc"
   }
 ]

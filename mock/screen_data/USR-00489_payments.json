@@ -1,8 +1,8 @@
 {
   "screen_id": "payments",
   "user_id": "USR-00489",
-  "havi_context": "El usuario tiene 8 suscripciones activas. Podr\u00eda ahorrar $400 si cancela las que no usa.",
-  "havi_context_short": "Tienes 8 suscripciones activas \ud83c\udf7f",
+  "havi_context": "El usuario tiene 8 suscripciones activas. Podría ahorrar $400 si cancela las que no usa.",
+  "havi_context_short": "Tienes 8 suscripciones activas 🍿",
   "data": {
     "servicios_frecuentes": [
       {

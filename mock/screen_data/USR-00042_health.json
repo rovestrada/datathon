@@ -2,7 +2,7 @@
   "screen_id": "health",
   "user_id": "USR-00042",
   "havi_context": "Ivan ve su salud financiera. Score 72.",
-  "havi_context_short": "Score: 72/100 \ud83d\udcca",
+  "havi_context_short": "Score: 72/100 📊",
   "data": {
     "score_financiero": 72,
     "score_label": "Bueno",

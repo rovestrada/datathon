@@ -1,10 +1,14 @@
 import { createContext, useContext, useState, useCallback } from 'react'
+import { API_BASE } from '../utils/apiConfig'
+import { useScreen } from './ScreenContext'
 
 const AuthContext = createContext(null)
 const LS_USER_KEY = 'havi_cached_user_id'   // localStorage — persiste
 const SS_TOKEN_KEY = 'havi_token'            // sessionStorage — se limpia al cerrar
 
 export function AuthProvider({ children }) {
+  const { clearScreenCache } = useScreen()
+  
   // user_id cacheado: solo para mostrar "Hola de nuevo" en el login
   const [cachedUserId]    = useState(() => localStorage.getItem(LS_USER_KEY))
   
@@ -27,12 +31,11 @@ export function AuthProvider({ children }) {
     setLoginLoading(true)
     setLoginError(null)
     try {
-      const authRes = await fetch('/api/auth/login', {
+      const authRes = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, password }),
       })
-      
       if (!authRes.ok) {
         const err = await authRes.json()
         throw new Error(err.detail || 'Credenciales inválidas')
@@ -41,23 +44,29 @@ export function AuthProvider({ children }) {
       const { token: tok, user_id } = await authRes.json()
 
       // Cargar perfil completo para obtener el nombre
-      const profileRes = await fetch(`/api/user/profile/${user_id}`, {
-        headers: { Authorization: `Bearer ${tok}` },
-      })
-      const profileData = await profileRes.json()
+      let fullName = null
+      try {
+        const profileRes = await fetch(`${API_BASE}/user/profile/${user_id}`, {
+          headers: { Authorization: `Bearer ${tok}` },
+        })
+        if (profileRes.ok) {
+          const profileData = await profileRes.json()
+          fullName = profileData.full_name ?? null
+        }
+      } catch { /* nombre queda null, no bloquea el login */ }
 
       // Cachear datos
       localStorage.setItem(LS_USER_KEY, user_id)
       sessionStorage.setItem('havi_customer_id', user_id)
-      sessionStorage.setItem('havi_user_name', profileData.full_name)
+      if (fullName) sessionStorage.setItem('havi_user_name', fullName)
       sessionStorage.setItem(SS_TOKEN_KEY, tok)
-      
+
       setCustomerId(user_id)
-      setUserName(profileData.full_name)
+      setUserName(fullName)
       setToken(tok)
 
       // Cargar trigger activo (skin + mensaje de apertura)
-      const openRes = await fetch(`/api/chat/open?user_id=${user_id}`, {
+      const openRes = await fetch(`${API_BASE}/chat/open?user_id=${user_id}`, {
         headers: { Authorization: `Bearer ${tok}` },
       })
       if (openRes.ok) {
@@ -77,9 +86,11 @@ export function AuthProvider({ children }) {
     sessionStorage.clear()
     // NO limpiar localStorage — queremos recordar el user_id para la próxima vez
     setCustomerId(null)
+    setUserName(null)
     setToken(null)
     setChatOpenData(null)
-  }, [])
+    clearScreenCache() // ← Limpiar datos de pantalla
+  }, [clearScreenCache])
 
   return (
     <AuthContext.Provider value={{

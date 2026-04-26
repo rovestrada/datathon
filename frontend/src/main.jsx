@@ -8,12 +8,12 @@ import { ScreenProvider } from './context/ScreenContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <PetProvider>
-        <ScreenProvider>
+    <ScreenProvider>
+      <AuthProvider>
+        <PetProvider>
           <App />
-        </ScreenProvider>
-      </PetProvider>
-    </AuthProvider>
+        </PetProvider>
+      </AuthProvider>
+    </ScreenProvider>
   </StrictMode>,
 )
