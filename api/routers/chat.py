@@ -35,7 +35,7 @@ def chat_open(
         trigger_id=t["trigger_id"],
         opening_message=t["opening_message"],
         ctas=t["ctas"],
-        pet_skin=t["pet_skin"],
+        archetype_name=profile["archetype_name"]
     )
 
 

@@ -4,19 +4,19 @@ import { useAuth } from '../context/AuthContext'
 import { Eye, EyeOff } from 'lucide-react'
 
 export default function Login() {
-  const { login } = useAuth()
-  const [value, setValue] = useState('')
-  const [show, setShow] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const { login, loginError, loginLoading, cachedUserId } = useAuth()
+  const [value, setValue] = useState(() => cachedUserId ?? '')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!value.trim()) return
-    setLoading(true)
-    setTimeout(() => {
-      login(value.trim())
-      setLoading(false)
-    }, 500)
+    if (!value.trim() || !password.trim()) return
+    try {
+      await login(value.trim(), password.trim())
+    } catch (err) {
+      // El error se maneja en el context y se muestra vía loginError
+    }
   }
 
   return (
@@ -33,6 +33,13 @@ export default function Login() {
         transition={{ duration: 0.45, ease: 'easeOut' }}
         style={{ width: '100%', maxWidth: '400px', padding: '0 16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
+        {/* Saludo personalizado */}
+        {cachedUserId && (
+          <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px', textAlign: 'center' }}>
+            Hola de nuevo 👋
+          </p>
+        )}
+
         {/* Logo */}
         <div style={{ marginBottom: '32px' }}>
           <span style={{ fontFamily: 'Georgia, serif', fontSize: '36px', fontWeight: 700, fontStyle: 'italic', color: '#111', letterSpacing: '-1px' }}>
@@ -63,15 +70,35 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} noValidate>
             <label style={{ display: 'block', fontSize: '13px', color: '#6b7280', marginBottom: '8px' }}>
-              Escribe tu usuario
+              User ID
+            </label>
+            <div style={{ position: 'relative', marginBottom: '12px' }}>
+              <input
+                type="text"
+                value={value}
+                onChange={e => setValue(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#eef0f4',
+                  fontSize: '15px',
+                  color: '#111',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <label style={{ display: 'block', fontSize: '13px', color: '#6b7280', marginBottom: '8px' }}>
+              Contraseña
             </label>
             <div style={{ position: 'relative', marginBottom: '20px' }}>
               <input
-                type={show ? 'text' : 'password'}
-                inputMode="numeric"
-                autoComplete="username"
-                value={value}
-                onChange={e => setValue(e.target.value)}
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '12px 44px 12px 14px',
@@ -82,41 +109,46 @@ export default function Login() {
                   color: '#111',
                   outline: 'none',
                   boxSizing: 'border-box',
-                  letterSpacing: '3px',
+                  letterSpacing: showPassword ? 'normal' : '3px',
                 }}
-                aria-label="Usuario"
               />
               <button
                 type="button"
-                onClick={() => setShow(v => !v)}
+                onClick={() => setShowPassword(v => !v)}
                 style={{
                   position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
                   background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
                   color: '#9ca3af',
                 }}
-                aria-label={show ? 'Ocultar' : 'Mostrar'}
               >
-                {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
 
             <motion.button
               type="submit"
-              disabled={loading || !value.trim()}
+              disabled={loginLoading || !value.trim() || !password.trim()}
               whileTap={{ scale: 0.97 }}
               style={{
                 width: '100%', padding: '13px',
                 borderRadius: '8px', border: 'none',
-                background: loading || !value.trim() ? '#555' : '#111',
+                background: loginLoading || !value.trim() ? '#555' : '#111',
                 color: 'white', fontSize: '15px', fontWeight: 600,
-                cursor: loading || !value.trim() ? 'default' : 'pointer',
+                cursor: loginLoading || !value.trim() ? 'default' : 'pointer',
                 transition: 'background 0.2s',
                 float: 'right',
               }}
             >
-              {loading ? 'Verificando...' : 'Continuar'}
+              {loginLoading ? 'Verificando...' : 'Continuar'}
             </motion.button>
           </form>
+
+          {/* Mostrar error */}
+          {loginError && (
+            <p style={{ color: '#f87171', fontSize: '13px', marginTop: '10px', textAlign: 'center' }}>
+              {loginError}
+            </p>
+          )}
         </div>
 
         {/* Footer info */}

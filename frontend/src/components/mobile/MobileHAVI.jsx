@@ -1,19 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, Mic } from 'lucide-react'
+import { ChevronDown, Send, Loader2 } from 'lucide-react'
 import HaviLogo from '../HaviLogo'
-
-const BOT_RESPONSES = [
-  'Entendido. ¿En qué más puedo ayudarte?',
-  'Puedo ayudarte con transferencias, saldos y mucho más.',
-  'Tu saldo disponible es $96.84 MXN. ¿Deseas más información?',
-  'Recomiendo revisar tus movimientos para identificar gastos recurrentes.',
-  'Para transferir dinero ve a la sección Transferir en el menú.',
-  'Tu ahorro inmediato genera un rendimiento del 5%. ¡Excelente!',
-  'Recuerda que tu Cuenta Hey no tiene comisiones por mantenimiento.',
-  'Tu ahorro acumulado es $24.10 MXN. ¡Sigue adelante!',
-  'Puedo ayudarte a programar pagos automáticos. ¿Te interesa?',
-]
+import React from 'react'
 
 let msgId = 10
 
@@ -22,34 +11,14 @@ function now() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-function personalGreeting(customerId) {
-  const id = Number(customerId) || 0
-  const name = customerId
-    ? customerId.toString().charAt(0).toUpperCase() + customerId.toString().slice(1)
-    : 'Usuario'
-
-  if (id === 0) {
-    return `¡Hola, ${name}! Soy HAVI, tu asistente financiero inteligente. ¿En qué puedo ayudarte hoy?`
-  }
-  if (id <= 10) {
-    return `¡Hola, ${name}! Eres uno de nuestros primeros usuarios 🎉. Tu cuenta Hey no tiene comisiones y ya tienes $24.10 en ahorro inmediato generando rendimientos. ¿Qué te gustaría explorar?`
-  }
-  if (id <= 50) {
-    return `¡Buenas, ${name}! Veo que llevas un tiempo con nosotros. Tu saldo disponible es $96.84 MXN y tu ahorro inmediato está creciendo. ¿Quieres que te ayude a optimizar tu dinero?`
-  }
-  if (id <= 200) {
-    return `¡Hola, ${name}! Tu cuenta Hey está en buen estado. Tienes saldo disponible y un ahorro activo con rendimiento del 5% anual. ¿Hay algo en lo que pueda ayudarte?`
-  }
-  // Large ID number
-  return `¡Hola, ${name}! Soy HAVI y estoy aquí para ayudarte con cualquier duda sobre tu cuenta, tus productos o tus metas de ahorro. ¿Por dónde empezamos?`
-}
-
-export default function MobileHAVI({ customerId, onBack }) {
-  const [messages, setMessages] = useState([
+export default function MobileHAVI({ customerId, token, chatOpenData, onBack }) {
+  const sessionId = useRef(crypto.randomUUID())
+  const [ctasDone, setCtasDone] = useState(false)
+  const [messages, setMessages] = useState(() => [
     {
       id: 1,
       from: 'bot',
-      text: personalGreeting(customerId),
+      text: chatOpenData?.opening_message ?? `¡Hola! Soy HAVI. ¿En qué puedo ayudarte?`,
       ts: now(),
     }
   ])
@@ -62,24 +31,55 @@ export default function MobileHAVI({ customerId, onBack }) {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
 
-  const send = useCallback(() => {
-    const text = input.trim()
+  const send = useCallback(async (textOverride) => {
+    const text = (typeof textOverride === 'string' ? textOverride : input).trim()
     if (!text || isTyping) return
+
     setMessages(prev => [...prev, { id: msgId++, from: 'user', text, ts: now() }])
     setInput('')
     setIsTyping(true)
-    setTimeout(() => {
-      const reply = BOT_RESPONSES[Math.floor(Math.random() * BOT_RESPONSES.length)]
-      setMessages(prev => [...prev, { id: msgId++, from: 'bot', text: reply, ts: now() }])
+    setCtasDone(true)
+
+    try {
+      const res = await fetch('/api/chat/message', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          user_id: customerId, 
+          session_id: sessionId.current, 
+          message: text,
+          current_screen: 'havi'
+        }),
+      })
+      const data = await res.json()
+      setMessages(prev => [...prev, { 
+        id: msgId++, 
+        from: 'bot', 
+        ts: now(),
+        text: res.ok ? data.reply : 'Lo siento, tuve un problema técnico.' 
+      }])
+    } catch {
+      setMessages(prev => [...prev, { 
+        id: msgId++, 
+        from: 'bot', 
+        ts: now(),
+        text: 'Sin conexión con el servidor.' 
+      }])
+    } finally {
       setIsTyping(false)
-    }, 700 + Math.random() * 600)
-  }, [input, isTyping])
+    }
+  }, [input, isTyping, customerId, token])
 
   const clearChat = () => {
+    sessionId.current = crypto.randomUUID()
+    setCtasDone(false)
     setMessages([{
       id: msgId++,
       from: 'bot',
-      text: personalGreeting(customerId),
+      text: chatOpenData?.opening_message ?? `¡Hola! Soy HAVI.`,
       ts: now(),
     }])
   }
@@ -127,36 +127,54 @@ export default function MobileHAVI({ customerId, onBack }) {
           </span>
         </div>
 
-        {messages.map(msg => (
-          <motion.div
-            key={msg.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{
-              display: 'flex',
-              flexDirection: msg.from === 'bot' ? 'row' : 'row-reverse',
-              marginBottom: '12px',
-            }}
-          >
-            <div style={{
-              maxWidth: '78%',
-              background: msg.from === 'bot' ? '#2a2a3a' : '#a78bfa',
-              color: 'white',
-              borderRadius: msg.from === 'bot' ? '18px 18px 18px 4px' : '18px 18px 4px 18px',
-              padding: '12px 14px',
-              fontSize: '14px',
-              lineHeight: '1.55',
-            }}>
-              {msg.text}
+        {messages.map((msg, i) => (
+          <React.Fragment key={msg.id}>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                display: 'flex',
+                flexDirection: msg.from === 'bot' ? 'row' : 'row-reverse',
+                marginBottom: (i === 0 && !ctasDone && chatOpenData?.ctas) ? '8px' : '12px',
+              }}
+            >
               <div style={{
-                textAlign: 'right', fontSize: '11px',
-                color: 'rgba(255,255,255,0.45)', marginTop: '6px',
+                maxWidth: '78%',
+                background: msg.from === 'bot' ? '#2a2a3a' : '#a78bfa',
+                color: 'white',
+                borderRadius: msg.from === 'bot' ? '18px 18px 18px 4px' : '18px 18px 4px 18px',
+                padding: '12px 14px',
+                fontSize: '14px',
+                lineHeight: '1.55',
               }}>
-                {msg.ts}
+                {msg.text}
+                <div style={{
+                  textAlign: 'right', fontSize: '11px',
+                  color: 'rgba(255,255,255,0.45)', marginTop: '6px',
+                }}>
+                  {msg.ts}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* CTAs bajo el primer mensaje */}
+            {i === 0 && !ctasDone && chatOpenData?.ctas && (
+              <div style={{ 
+                display:'flex', flexWrap:'wrap', gap:'8px', 
+                marginBottom: '20px', paddingLeft: '4px' 
+              }}>
+                {chatOpenData.ctas.map(cta => (
+                  <button key={cta} onClick={() => send(cta)} style={{
+                    padding:'8px 16px', borderRadius:'20px', fontSize:'13px', cursor:'pointer',
+                    background: cta === 'Ahora no' ? 'transparent' : 'rgba(167,139,250,0.15)',
+                    color: cta === 'Ahora no' ? '#9ca3af' : '#a78bfa',
+                    border: `1px solid ${cta === 'Ahora no' ? '#333' : '#a78bfa55'}`,
+                  }}>{cta}</button>
+                ))}
+              </div>
+            )}
+          </React.Fragment>
         ))}
 
         {isTyping && (
@@ -222,9 +240,12 @@ export default function MobileHAVI({ customerId, onBack }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.2s',
             }}
-            aria-label="Enviar o micrófono"
+            aria-label="Enviar"
           >
-            <Mic size={17} color="white" />
+            {isTyping 
+              ? <Loader2 size={18} color="white" className="animate-spin" />
+              : <Send size={17} color="white" />
+            }
           </motion.button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AuthProvider, useAuth } from './context/AuthContext'
+import { useAuth } from './context/AuthContext'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import FloatingPet from './components/FloatingPet'
@@ -18,7 +18,7 @@ function useIsMobile() {
 }
 
 function AppContent() {
-  const { isAuthenticated, customerId } = useAuth()
+  const { isAuthenticated, customerId, token, chatOpenData } = useAuth()
   const [chatOpen, setChatOpen] = useState(false)
   const isMobile = useIsMobile()
 
@@ -43,7 +43,13 @@ function AppContent() {
         >
           <Dashboard />
           <FloatingPet onOpenChat={openChat} />
-          <ChatbotHAVI isOpen={chatOpen} onClose={() => setChatOpen(false)} customerId={customerId} />
+          <ChatbotHAVI 
+            isOpen={chatOpen} 
+            onClose={() => setChatOpen(false)} 
+            customerId={customerId} 
+            token={token}
+            chatOpenData={chatOpenData}
+          />
           <ChatToggleButton isOpen={chatOpen} onClick={toggleChat} unread={1} />
         </motion.div>
       ) : (
@@ -62,9 +68,5 @@ function AppContent() {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  )
+  return <AppContent />
 }
