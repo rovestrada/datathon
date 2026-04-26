@@ -74,9 +74,9 @@ export default function MobileApp() {
   // Cuando llega el perfil tras el login (vía chatOpenData), aplicar mascota default
   useEffect(() => {
     if (chatOpenData?.archetype_name) {
-      applyArchetypeDefault(chatOpenData.archetype_name)
+      applyArchetypeDefault(chatOpenData.archetype_name, customerId)
     }
-  }, [chatOpenData, applyArchetypeDefault])
+  }, [chatOpenData, customerId, applyArchetypeDefault])
 
   // Dismiss any active notification when screen changes
   useEffect(() => { setNotification(null) }, [screen])
