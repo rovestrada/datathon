@@ -231,12 +231,14 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
   })
   // Hover ref — read inside the game loop without stale closure issues
   const hoveredRef = useRef(false)
+  // Tooltip ref — freeze movement while notification is displayed
+  const tooltipRef = useRef(false)
 
   // 8 fps game loop (mirrors vscode-pets nextFrame)
   useEffect(() => {
     const tick = setInterval(() => {
-      // Pause all movement while the user hovers over the pet
-      if (hoveredRef.current) return
+      // Pause all movement while the user hovers over the pet or a notification is shown
+      if (hoveredRef.current || tooltipRef.current) return
 
       const g = gs.current
       const maxRight = window.innerWidth - 48 - 24
@@ -321,8 +323,9 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
       const delay = 30000 + Math.random() * 10000
       return setTimeout(() => {
         setMsgIndex(i => (i + 1) % NOTIFICATIONS.length)
+        tooltipRef.current = true
         setTooltip(true)
-        setTimeout(() => setTooltip(false), 5000)
+        setTimeout(() => { tooltipRef.current = false; setTooltip(false) }, 5000)
         timer = schedule()
       }, delay)
     }
@@ -331,6 +334,7 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
   }, [])
 
   const handleClick = useCallback(() => {
+    tooltipRef.current = false
     setTooltip(false)
     onOpenChat()
   }, [onOpenChat])
@@ -338,6 +342,15 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
   const { map, facing, leftPx, bottomPx } = render
   // Mirror sprite horizontally when facing left — same as vscode-pets scaleX(-1)
   const scaleX = facing === 'left' ? -1 : 1
+
+  // Clamp bubble so it never overflows the viewport edges
+  const BUBBLE_MAX_W = 190
+  const SPRITE_HALF  = 24 // half of 48px sprite
+  const screenBubbleCenter = Math.max(
+    8 + BUBBLE_MAX_W / 2,
+    Math.min(window.innerWidth - 8 - BUBBLE_MAX_W / 2, leftPx + SPRITE_HALF)
+  )
+  const bubbleRelLeft = screenBubbleCenter - BUBBLE_MAX_W / 2 - leftPx
 
   return (
     <div
@@ -364,8 +377,7 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
             style={{
               position:     'absolute',
               bottom:       '60px',
-              left:         '50%',
-              transform:    'translateX(-50%)',
+              left:         `${bubbleRelLeft}px`,
               background:   '#fff',
               color:        '#333',
               border:       '2px solid #333',
@@ -373,8 +385,7 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
               padding:      '8px 10px',
               fontSize:     '10px',
               fontFamily:   'monospace',
-              minWidth:     '130px',
-              maxWidth:     '190px',
+              width:        `${BUBBLE_MAX_W}px`,
               textAlign:    'center',
               lineHeight:   '1.4em',
               whiteSpace:   'normal',
@@ -383,11 +394,11 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
             }}
           >
             {NOTIFICATIONS[msgIndex]}
-            {/* Bubble tail (matches .bubble:before / :after) */}
+            {/* Bubble tail — offset to point at sprite center */}
             <span style={{
               position:    'absolute',
               bottom:      '-10px',
-              left:        '12px',
+              left:        `${SPRITE_HALF - bubbleRelLeft - 7}px`,
               width:       0, height: 0,
               borderTop:   '7px solid #333',
               borderRight: '7px solid transparent',
@@ -396,7 +407,7 @@ const FloatingPet = memo(function FloatingPet({ onOpenChat }) {
             <span style={{
               position:    'absolute',
               bottom:      '-6px',
-              left:        '14px',
+              left:        `${SPRITE_HALF - bubbleRelLeft - 5}px`,
               width:       0, height: 0,
               borderTop:   '5px solid #fff',
               borderRight: '5px solid transparent',

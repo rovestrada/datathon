@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, SlidersHorizontal, User, ChevronRight } from 'lucide-react'
+import { Menu, User, ChevronRight } from 'lucide-react'
 import { usePet } from '../../context/PetContext'
 import { useAuth } from '../../context/AuthContext'
 import { useScreen } from '../../context/ScreenContext'
-import { getGifUrl, PET_TYPES } from './petSprites'
+import { getGifUrl } from './petSprites'
+import MobileSidebar from './MobileSidebar'
 
 // Card skin themes per pet type+variant
 const CARD_THEMES = {
@@ -153,11 +154,12 @@ function CardPreview({ petType, petVariant, cardSkin }) {
   )
 }
 
-export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, onGoToStatement }) {
+export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, onGoToStatement, onNavigate }) {
   const { petType, petVariant, cardSkin } = usePet()
   const { userName } = useAuth()
   const { screenCache } = useScreen()
   const [balanceHidden, setBalanceHidden] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // Extraer datos dinámicos del JSON de pantalla 'home'
   const loadingHome = screenCache.home === undefined
@@ -199,6 +201,12 @@ export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, o
       flex: 1, overflowY: 'auto', background: '#0a0a12',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     }}>
+      <MobileSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        currentScreen="inicio"
+        onNavigate={id => { onNavigate?.(id) }}
+      />
       {/* Top bar */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 20, background: '#0d1022',
@@ -211,8 +219,8 @@ export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, o
           </span>
         </div>
         <div style={{ display: 'flex', gap: '16px' }}>
-          <button onClick={onGoToHealth} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}>
-            <SlidersHorizontal size={22} color="white" />
+          <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}>
+            <Menu size={22} color="white" />
           </button>
           <button onClick={onGoToSettings} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}>
             <User size={22} color="white" />

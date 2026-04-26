@@ -3,9 +3,11 @@ import { ChevronLeft, Check } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PET_TYPES, getGifUrl, getIconUrl } from './petSprites'
 import { usePet } from '../../context/PetContext'
+import { useAuth } from '../../context/AuthContext'
 
 export default function MobilePetCustomization({ onBack }) {
   const { petEnabled, petType, petVariant, setPetEnabled, setUserPet } = usePet()
+  const { customerId } = useAuth()
 
   const typeMeta     = PET_TYPES[petType] || PET_TYPES.panda
   const defaultVar   = typeMeta.defaultVariant
@@ -22,7 +24,7 @@ export default function MobilePetCustomization({ onBack }) {
 
   function save() {
     setPetEnabled(draftEnabled)
-    setUserPet(draftType, draftVariant)
+    setUserPet(draftType, draftVariant, customerId)
     onBack()
   }
 
