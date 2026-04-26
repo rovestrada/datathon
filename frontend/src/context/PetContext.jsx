@@ -5,11 +5,9 @@ const petKey = (userId) => `havi_pet_pref_${userId}`   // per-user localStorage 
 
 // Default de mascota por arquetipo (asignado por el pipeline ML)
 const ARCHETYPE_PET_MAP = {
-  'Joven Profesional Urbano': { petType: 'fox',   petVariant: 'red'   },
-  'Estudiante Digital':       { petType: 'panda', petVariant: 'black' },
-  'Ahorrador Precavido':      { petType: 'dog',   petVariant: 'white' },
-  'Emprendedor Digital':      { petType: 'panda', petVariant: 'brown' },
-  'Usuario Inactivo':         { petType: 'dog',   petVariant: 'brown' },
+  'Heavy User Crédito':    { petType: 'panda', petVariant: 'brown' },
+  'Joven Digital':         { petType: 'fox',   petVariant: 'red'   },
+  'Ahorrador Consolidado': { petType: 'dog',   petVariant: 'white' },
 }
 const DEFAULT_PET = { petType: 'fox', petVariant: 'red' }
 
