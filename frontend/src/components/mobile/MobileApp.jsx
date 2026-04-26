@@ -9,7 +9,7 @@ import MobileLogin from './MobileLogin'
 import MobileHome from './MobileHome'
 import MobileHAVI from './MobileHAVI'
 import MobileSettings from './MobileSettings'
-import { MobilePagos, MobileTransferir, MobileBuzon } from './MobileScreens'
+import { MobilePagos, MobileTransferir, MobileBuzon, MobileCards } from './MobileScreens'
 import MobileFinancialHealth from './MobileFinancialHealth'
 import MobileStatement from './MobileStatement'
 import MobilePetCustomization from './MobilePetCustomization'
@@ -22,7 +22,13 @@ const FULL_SCREENS = ['havi', 'ajustes', 'mascota']
 // Screens that show the bottom nav bar
 const NAV_SCREENS  = ['inicio', 'pagos', 'transferir', 'buzon']
 // Screens with no nav, no full-screen modal (pet walks at actual bottom)
-const FREE_SCREENS = ['salud', 'estado']
+const FREE_SCREENS = ['salud', 'estado', 'cards']
+
+// CONFIGURABLE: Screens where the pet is allowed to appear
+const PET_SCREENS = [
+  'inicio', 'pagos', 'transferir', 'buzon', 
+  'salud', 'estado', 'cards'
+]
 
 const NAV_TABS = [
   { id: 'inicio', label: 'Inicio', icon: Home },
@@ -34,10 +40,22 @@ const NAV_TABS = [
 export default function MobileApp() {
   const { isAuthenticated, customerId, token, chatOpenData } = useAuth()
   const { petEnabled, petType, petVariant, applyArchetypeDefault } = usePet()
-  const { navigateTo } = useScreen()
+  const { navigateTo, cacheScreenData, screenCache } = useScreen()
   const [screen, setScreen] = useState('inicio')
   const [prevScreen, setPrevScreen] = useState(null)
   const [petPaused, setPetPaused] = useState(false)
+  const [petX, setPetX] = useState(40)
+  const [petFacingR, setPetFacingR] = useState(true)
+
+  const handlePetMove = (data) => {
+    // Si data es un objeto (v2), extraemos campos. Si es solo número (compat), actualizamos solo X.
+    if (typeof data === 'object') {
+      setPetX(data.x)
+      setPetFacingR(data.facingR)
+    } else {
+      setPetX(data)
+    }
+  }
 
   // Cuando llega el perfil tras el login (vía chatOpenData), aplicar mascota default
   useEffect(() => {
@@ -48,19 +66,47 @@ export default function MobileApp() {
 
   // Pause pet whenever entering a free screen; bubble dismiss will unpause
   useEffect(() => {
-    if (FREE_SCREENS.includes(screen)) setPetPaused(true)
+    if (FREE_SCREENS.includes(screen)) {
+      setPetPaused(true)
+      // H05: En salud y estado, la bubble aparece sola tras 1.5s (unpausing pet triggers it)
+      if (screen === 'salud' || screen === 'estado' || screen === 'cards') {
+        const t = setTimeout(() => setPetPaused(false), 1500)
+        return () => clearTimeout(t)
+      }
+    } else {
+      setPetPaused(false)
+    }
   }, [screen])
+
+  // Cargar datos de la pantalla desde el backend
+  const loadScreenData = async (screenId) => {
+    if (screenCache[screenId]) return
+    try {
+      const res = await fetch(`/api/screen/${screenId}?user_id=${customerId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) cacheScreenData(screenId, await res.json())
+    } catch (e) {
+      console.warn(`Error cargando screen:${screenId}`, e)
+    }
+  }
+
+  useEffect(() => {
+    if (isAuthenticated && customerId) loadScreenData('inicio')
+  }, [isAuthenticated, customerId])
 
   const goTo = (s) => { 
     setPrevScreen(screen)
     setScreen(s)
     navigateTo(s) 
+    loadScreenData(s)
   }
   const goBack = () => { 
     const s = prevScreen || 'inicio'
     setScreen(s)
     setPrevScreen(null)
     navigateTo(s)
+    loadScreenData(s)
   }
 
   // Visibility logic
@@ -68,9 +114,9 @@ export default function MobileApp() {
   const isFullScreen  = FULL_SCREENS.includes(screen)   // no pet, no nav
   const isFreeScreen  = FREE_SCREENS.includes(screen)   // salud / estado
   const showBottomNav = isNavScreen
-  // Pet visible on home (above nav) and on secondary screens (at actual bottom)
-  const showPet        = petEnabled && (screen === 'inicio' || isFreeScreen)
-  const petNavVisible  = screen === 'inicio'             // tells NavPet to sit above nav
+  // Pet visible according to configurable list
+  const showPet        = petEnabled && PET_SCREENS.includes(screen)
+  const petNavVisible  = isNavScreen             // Sit above nav if nav is visible
   const showHAVICorner = !petEnabled && isFreeScreen
   const showBubble     = !isFullScreen
   const thoughtBubble  = isFreeScreen
@@ -101,7 +147,8 @@ export default function MobileApp() {
           {screen === 'pagos'      && <MobilePagos onBack={goBack} />}
           {screen === 'transferir' && <MobileTransferir customerId={customerId} onBack={goBack} />}
           {screen === 'buzon'      && <MobileBuzon onBack={goBack} />}
-          {screen === 'havi'       && <MobileHAVI customerId={customerId} token={token} chatOpenData={chatOpenData} onBack={goBack} />}
+          {screen === 'cards'      && <MobileCards onBack={goBack} />}
+          {screen === 'havi'       && <MobileHAVI customerId={customerId} token={token} chatOpenData={chatOpenData} onBack={goBack} onNavigate={goTo} />}
           {screen === 'ajustes'    && <MobileSettings onBack={goBack} onNavigate={goTo} />}
           {screen === 'salud'      && <MobileFinancialHealth onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
           {screen === 'estado'     && <MobileStatement onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
@@ -117,6 +164,8 @@ export default function MobileApp() {
           bottomOffset={isNavScreen ? '88px' : '82px'}
           thoughtBubble={thoughtBubble && petEnabled}
           onDismiss={isFreeScreen ? () => setPetPaused(false) : undefined}
+          petX={petX}
+          facingR={petFacingR}
         />
       )}
 
@@ -128,6 +177,7 @@ export default function MobileApp() {
           navVisible={petNavVisible}
           paused={isFreeScreen && petPaused}
           onPress={() => goTo('havi')}
+          onPositionChange={handlePetMove}
         />
       )}
 

@@ -1,0 +1,10 @@
+{
+  "screen_id": "home",
+  "user_id": "USR-00042",
+  "havi_context": "El usuario Ivan est\u00e1 en el inicio. Saldo Hey: $12,400. Tiene una inversi\u00f3n sugerida de $99/mes de rendimiento.",
+  "havi_context_short": "Tu saldo: $12,400 \ud83d\udcb0",
+  "data": {
+    "saldo": 12400.0,
+    "nombre": "Ivan G."
+  }
+}

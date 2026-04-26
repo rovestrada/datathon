@@ -89,3 +89,28 @@ export function MobileBuzon({ onBack }) {
     </SimpleMobileScreen>
   )
 }
+
+export function MobileCards({ onBack }) {
+  return (
+    <SimpleMobileScreen title="Mis Tarjetas" onBack={onBack}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <div style={{
+          background: 'linear-gradient(135deg, #111, #333)',
+          borderRadius: '16px', height: '180px', padding: '24px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          marginBottom: '20px', border: '1px solid #444'
+        }}>
+          <div>
+            <p style={{ margin: 0, fontSize: '12px', color: '#888', letterSpacing: '1px' }}>TARJETA HEY</p>
+            <p style={{ margin: '4px 0 0', fontSize: '18px', color: 'white', fontWeight: 700 }}>**** 4521</p>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <p style={{ margin: 0, fontSize: '14px', color: 'white' }}>IVAN G.</p>
+            <div style={{ width: '40px', height: '25px', background: '#f59e0b', borderRadius: '4px' }} />
+          </div>
+        </div>
+        <p style={{ fontSize: '14px', color: '#666' }}>Límite de crédito: $15,000.00</p>
+      </motion.div>
+    </SimpleMobileScreen>
+  )
+}
