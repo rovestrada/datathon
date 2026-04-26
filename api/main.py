@@ -5,13 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
-from routers import auth, users, chat
+from routers import auth, users, chat, screens
 from services.profile_loader import load_profiles
+from services.screen_loader import load_screen_data
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     load_profiles()
+    load_screen_data()
     yield
 
 
@@ -32,6 +34,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(chat.router)
+app.include_router(screens.router)
 
 
 @app.get("/health", tags=["infra"])
@@ -41,6 +44,7 @@ def health():
 
 @app.post("/admin/reload", tags=["infra"])
 def reload_profiles():
-    """Recarga user_profiles.json sin reiniciar. Útil cuando DS actualiza el modelo."""
+    """Recarga perfiles y datos de pantalla sin reiniciar."""
     load_profiles()
+    load_screen_data()
     return {"status": "reloaded"}

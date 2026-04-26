@@ -1,16 +1,22 @@
 import os
+import json
+import re
 from anthropic import Anthropic
 from services.profile_loader import get_profile
+from services.screen_loader import get_havi_context
 
 # Historial por sesión: { session_id: [{"role": ..., "content": ...}] }
 _sessions: dict[str, list[dict]] = {}
 
-MAX_HISTORY = 20  # mensajes máximos por sesión antes de truncar
+MAX_HISTORY = 20  
 
 
-def _build_system_prompt(profile: dict) -> str:
+def _build_system_prompt(profile: dict, current_screen: str = "inicio") -> str:
     t = profile["trigger_active"]
     txs = profile.get("recent_transactions", [])
+    
+    # Obtener el contexto narrativo de la pantalla actual
+    screen_ctx = get_havi_context(profile["user_id"], current_screen)
 
     tx_lines = "\n".join(
         f"  - {tx['fecha']} | {tx['comercio']} | ${tx['monto']:.0f} MXN"
@@ -20,40 +26,43 @@ def _build_system_prompt(profile: dict) -> str:
     )
 
     return f"""Eres Havi, el asistente virtual de Hey Banco. Tu personalidad es amigable,
-directa y proactiva. Hablas en español mexicano informal pero profesional. Usas emojis
-ocasionalmente pero sin exagerar.
+directa y proactiva. Hablas en español mexicano informal pero profesional.
 
 PERFIL DEL USUARIO:
 - Arquetipo: {profile['archetype_name']}
 - Características detectadas: {', '.join(profile['top_features']).replace('_', ' ')}
-- Score de comportamiento inusual: {profile['anomaly_score']} (0 = normal, 1 = muy inusual)
+- Score de comportamiento inusual: {profile['anomaly_score']}
 
-RAZÓN POR LA QUE INICIACHE ESTA CONVERSACIÓN (trigger activo):
-- Tipo: {t['name']} ({t['trigger_id']})
+PANTALLA ACTUAL DONDE ESTÁ EL USUARIO: {current_screen}
+CONTEXTO DE LO QUE EL USUARIO ESTÁ VIENDO AHORA:
+{screen_ctx}
+
+RAZÓN DEL TRIGGER PROACTIVO (solo si es el inicio):
 - Mensaje que enviaste: "{t['opening_message']}"
 - Opciones que ofreciste: {', '.join(t['ctas'])}
 
-ÚLTIMAS TRANSACCIONES DEL USUARIO:
+ÚLTIMAS TRANSACCIONES:
 {tx_lines}
 
 INSTRUCCIONES DE COMPORTAMIENTO:
-- Si el usuario acepta un CTA, da detalles concretos y útiles del producto o acción.
-- Si dice "Ahora no" o algo similar, despídete amablemente y ofrece ayuda futura.
-- Solo habla de temas financieros y de productos Hey Banco. Si preguntan algo fuera
-  de ese alcance, redirige amablemente.
-- Nunca inventes cifras que no estén en el perfil. Si no tienes un dato, dilo.
-- Mantén respuestas cortas: máximo 3-4 oraciones. El usuario está en su teléfono.
-- Responde SOLO en texto plano. Sin markdown, sin listas con asteriscos, sin negritas."""
+- Responde de forma contextual a la pantalla actual si es relevante.
+- Si el usuario muestra interés en navegar a otra sección (ej: "ver mi tarjeta", "quiero pagar", "inicio"), incluye al final de tu respuesta el siguiente formato JSON:
+  [NAV:{{"screen":"id_de_la_pantalla","label":"Texto corto del botón"}}]
+  IDs permitidos: inicio, pagos, transferir, buzon, salud, estado, cards, ajustes, havi.
+- Responde SOLO en texto plano (antes del tag NAV). Sin markdown.
+- Respuestas cortas: 3-4 oraciones máximo.
+"""
 
 
-def get_chat_reply(user_id: str, session_id: str, message: str) -> str:
+def get_chat_reply(user_id: str, session_id: str, message: str, 
+                   current_screen: str = "inicio") -> tuple[str, dict | None]:
     profile = get_profile(user_id)
     if not profile:
-        return "Lo siento, no pude encontrar tu información."
+        return ("Lo siento, no pude encontrar tu información.", None)
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        return "Error: ANTHROPIC_API_KEY no configurada."
+        return ("Error: ANTHROPIC_API_KEY no configurada.", None)
 
     try:
         client = Anthropic(api_key=api_key)
@@ -63,24 +72,36 @@ def get_chat_reply(user_id: str, session_id: str, message: str) -> str:
 
         _sessions[session_id].append({"role": "user", "content": message})
 
-        # Usamos el modelo especificado para el hackathon
         response = client.messages.create(
             model="claude-sonnet-4-6",
-            max_tokens=300,
-            system=_build_system_prompt(profile),
+            max_tokens=450,
+            system=_build_system_prompt(profile, current_screen),
             messages=_sessions[session_id],
         )
 
-        reply = response.content[0].text
-        _sessions[session_id].append({"role": "assistant", "content": reply})
+        full_reply = response.content[0].text
+        
+        # Extraer navigation_action si existe
+        nav_action = None
+        nav_match = re.search(r'\[NAV:(\{.*?\})\]', full_reply)
+        reply_text = full_reply
+        
+        if nav_match:
+            try:
+                nav_action = json.loads(nav_match.group(1))
+                reply_text = full_reply[:nav_match.start()].strip()
+            except:
+                pass
+
+        _sessions[session_id].append({"role": "assistant", "content": reply_text})
 
         if len(_sessions[session_id]) > MAX_HISTORY:
             _sessions[session_id] = _sessions[session_id][-MAX_HISTORY:]
 
-        return reply
+        return (reply_text, nav_action)
     except Exception as e:
         print(f"[chat_service] Error de Anthropic: {str(e)}")
-        return f"Havi está teniendo problemas técnicos: {str(e)}"
+        return (f"Havi está teniendo problemas técnicos: {str(e)}", None)
 
 
 def clear_session(session_id: str) -> None:

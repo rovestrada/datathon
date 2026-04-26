@@ -1,105 +1,133 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import HaviLogo from '../HaviLogo'
+import { useScreen } from '../../context/ScreenContext'
+import { useAuth } from '../../context/AuthContext'
 
-// Per-screen HAVI suggestions
-const SUGGESTIONS = {
-  pagos: '¿Sabías que puedes programar pagos automáticos? ¡Actívalo y olvídate de fechas!',
-  transferir: 'Puedo ayudarte a hacer una transferencia SPEI sin comisiones. ¿A quién le vas a enviar?',
-  buzon: 'Tienes notificaciones pendientes. ¿Quieres que te resuma las más importantes?',
-  ajustes: '¿Necesitas bloquear tu tarjeta de emergencia? Puedo guiarte en segundos.',
-  salud: 'Con tu ritmo de ahorro actual llegarás a $100 MXN en ~3 meses. ¿Quieres activar el redondeo automático para acelerar tu meta?',
-  estado: 'Tu cuenta no registra gastos este mes. ¡Excelente! Considera mover parte de tu saldo a ahorro inmediato para generar más rendimiento.',
-}
-
-export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', thoughtBubble = false, onDismiss }) {
+export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', onDismiss, petX, facingR }) {
+  const { screenCache } = useScreen()
+  const { chatOpenData } = useAuth()
   const [visible, setVisible] = useState(false)
-  const suggestion = SUGGESTIONS[screen]
+
+  const SCREEN_MESSAGES = {
+    inicio:     chatOpenData?.opening_message ?? '¿En qué te ayudo hoy? 👋',
+    salud:      '¡Tu score financiero está subiendo! 📊',
+    estado:     'Veo que no has tenido cargos duplicados. ¡Bien! 🔍',
+    pagos:      '¿Quieres que revise tus fechas de vencimiento? 📅',
+    transferir: '¿A quién le enviaremos dinero hoy? 💸',
+    buzon:      '¡Tienes un aviso importante de Hey! 💡',
+    cards:      'Tu tarjeta está lista para usarse 💳',
+  }
+
+  const screenData = screenCache[screen]
+  const message = screenData?.havi_context_short ?? SCREEN_MESSAGES[screen] ?? '¡Hola! 👋'
+
+  const bubbleWidth = 180;
+  const margin = 10;
+  const petCenter = petX + 32;
+
+  // Lógica de visibilidad dinámica basada en dirección
+  // Si mira a la derecha (facingR=true), la caja sale a la derecha (necesita espacio a la derecha)
+  // Si mira a la izquierda (facingR=false), la caja sale a la izquierda (necesita espacio a la izquierda)
+  const hasSpace = facingR 
+    ? (petCenter < (window.innerWidth - bubbleWidth - margin))
+    : (petCenter > (bubbleWidth + margin));
 
   useEffect(() => {
-    if (!suggestion) return
     setVisible(false)
-    const t = setTimeout(() => setVisible(true), 1200)
+    const t = setTimeout(() => setVisible(true), 1500)
     return () => clearTimeout(t)
   }, [screen])
 
-  if (!suggestion) return null
-
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && hasSpace && (
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 10, scale: 0.9 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.1 }}
           style={{
             position: 'fixed',
-            bottom: bottomOffset,
-            left: '16px',
-            right: '16px',
+            bottom: `calc(${bottomOffset} + 60px)`,
+            left: `${petCenter}px`,
             zIndex: 40,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: facingR ? 'flex-start' : 'flex-end', // Alinear al ancla según dirección
+            pointerEvents: 'none'
           }}
         >
-          {/* Thought-bubble tail: three circles pointing toward the pet at the bottom */}
-          {thoughtBubble && (
-            <div style={{ display: 'flex', gap: '3px', paddingLeft: '20px', marginBottom: '5px', alignItems: 'flex-end' }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#1e1040', border: '1px solid #a78bfa44' }} />
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#1e1040', border: '1px solid #a78bfa44' }} />
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1e1040', border: '1px solid #a78bfa44' }} />
-            </div>
-          )}
-          <div style={{
-            background: '#1e1040',
-            border: '1px solid #a78bfa44',
-            borderRadius: '16px',
-            padding: '14px 16px',
-            display: 'flex', alignItems: 'flex-start', gap: '12px',
-            boxShadow: '0 8px 32px rgba(167,139,250,0.2)',
-          }}>
-            {/* HAVI avatar */}
+          {/* El cuerpo de la burbuja */}
+          <div 
+            onClick={onOpenHAVI}
+            style={{
+              background: 'white',
+              border: '2px solid black',
+              padding: '8px 12px',
+              position: 'relative',
+              boxShadow: '0 4px 0 rgba(0,0,0,0.1)',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              width: `${bubbleWidth}px`,
+              textAlign: 'center',
+              // Margen dinámico para no tapar la flecha
+              marginLeft: facingR ? '10px' : '0',
+              marginRight: facingR ? '0' : '10px'
+            }}
+          >
             <button
-              onClick={onOpenHAVI}
+              onClick={(e) => { e.stopPropagation(); setVisible(false); onDismiss?.() }}
               style={{
-                width: '34px', height: '34px', borderRadius: '8px',
-                background: 'none',
-                border: 'none', cursor: 'pointer', flexShrink: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: 0,
+                position: 'absolute', top: '-10px', 
+                right: facingR ? '-10px' : 'auto',
+                left: facingR ? 'auto' : '-10px',
+                background: 'white', border: '2px solid black',
+                width: '18px', height: '18px', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                padding: 0
               }}
-              aria-label="Abrir HAVI"
             >
-              <HaviLogo size={30} />
+              <X size={10} color="black" strokeWidth={3} />
             </button>
-            <div style={{ flex: 1 }}>
-              <p style={{
-                margin: '0 0 6px', fontSize: '11px',
-                color: '#a78bfa', fontWeight: 600, letterSpacing: '0.5px',
-              }}>
-                HAVI sugiere
-              </p>
-              <p style={{ margin: 0, fontSize: '13px', color: '#e5e7eb', lineHeight: 1.5 }}>
-                {suggestion}
-              </p>
-              <button
-                onClick={onOpenHAVI}
-                style={{
-                  marginTop: '8px', background: 'none', border: 'none',
-                  cursor: 'pointer', color: '#a78bfa', fontSize: '12px',
-                  fontWeight: 600, padding: 0,
-                }}
-              >
-                Hablar con HAVI →
-              </button>
-            </div>
-            <button
-              onClick={() => { setVisible(false); onDismiss?.() }}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', flexShrink: 0 }}
-              aria-label="Cerrar sugerencia"
-            >
-              <X size={14} color="#555" />
-            </button>
+
+            <p style={{
+              margin: 0,
+              color: 'black',
+              fontSize: '10.5px',
+              fontFamily: '"Courier New", Courier, monospace',
+              fontWeight: 'bold',
+              lineHeight: 1.2,
+              wordWrap: 'break-word'
+            }}>
+              {message}
+            </p>
+          </div>
+
+          {/* Flecha dinámica */}
+          <div style={{
+            marginLeft: facingR ? '10px' : '0',
+            marginRight: facingR ? '0' : '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: facingR ? 'flex-start' : 'flex-end',
+            marginTop: '-2px'
+          }}>
+            <div style={{
+              width: 0, height: 0,
+              borderLeft: facingR ? '1px solid transparent' : '12px solid transparent',
+              borderRight: facingR ? '12px solid transparent' : '1px solid transparent',
+              borderTop: '12px solid black',
+            }} />
+            <div style={{
+              width: 0, height: 0,
+              borderLeft: facingR ? '0px solid transparent' : '8px solid transparent',
+              borderRight: facingR ? '8px solid transparent' : '0px solid transparent',
+              borderTop: '8px solid white',
+              marginTop: '-14px',
+              marginLeft: facingR ? '2px' : '0',
+              marginRight: facingR ? '0' : '2px'
+            }} />
           </div>
         </motion.div>
       )}

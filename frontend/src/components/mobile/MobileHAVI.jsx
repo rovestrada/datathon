@@ -11,7 +11,7 @@ function now() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-export default function MobileHAVI({ customerId, token, chatOpenData, onBack }) {
+export default function MobileHAVI({ customerId, token, chatOpenData, onBack, onNavigate }) {
   const sessionId = useRef(crypto.randomUUID())
   const [ctasDone, setCtasDone] = useState(false)
   const [messages, setMessages] = useState(() => [
@@ -55,11 +55,14 @@ export default function MobileHAVI({ customerId, token, chatOpenData, onBack }) 
         }),
       })
       const data = await res.json()
+      
+      // Si el backend sugiere una navegación, la guardamos temporalmente en el mensaje
       setMessages(prev => [...prev, { 
         id: msgId++, 
         from: 'bot', 
         ts: now(),
-        text: res.ok ? data.reply : 'Lo siento, tuve un problema técnico.' 
+        text: res.ok ? data.reply : 'Lo siento, tuve un problema técnico.',
+        navAction: data.navigation_action // ← Guardar acción
       }])
     } catch {
       setMessages(prev => [...prev, { 
@@ -149,6 +152,20 @@ export default function MobileHAVI({ customerId, token, chatOpenData, onBack }) 
                 lineHeight: '1.55',
               }}>
                 {msg.text}
+                
+                {msg.navAction && (
+                  <button 
+                    onClick={() => onNavigate(msg.navAction.screen)}
+                    style={{
+                      marginTop: '12px', width: '100%', padding: '10px',
+                      borderRadius: '12px', background: 'white', color: '#1e1040',
+                      border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer'
+                    }}
+                  >
+                    {msg.navAction.label} →
+                  </button>
+                )}
+
                 <div style={{
                   textAlign: 'right', fontSize: '11px',
                   color: 'rgba(255,255,255,0.45)', marginTop: '6px',

@@ -46,8 +46,14 @@ def chat_message(
 ):
     """
     Turno de conversación con Havi. Mantiene historial por session_id en memoria.
-    El system prompt incluye el perfil completo del usuario para que Havi tenga contexto.
+    El system prompt incluye el perfil completo del usuario y el contexto de la pantalla.
     """
     _resolve_token(authorization)
-    reply = get_chat_reply(req.user_id, req.session_id, req.message)
-    return ChatMessageResponse(reply=reply, session_id=req.session_id)
+    reply, nav_action = get_chat_reply(
+        req.user_id, req.session_id, req.message, req.current_screen
+    )
+    return ChatMessageResponse(
+        reply=reply, 
+        session_id=req.session_id,
+        navigation_action=nav_action
+    )

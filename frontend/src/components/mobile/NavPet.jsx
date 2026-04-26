@@ -13,7 +13,14 @@ function bottomY(navVisible) {
   return window.innerHeight - (navVisible ? NAV_H : 0) - MARGIN - PET_H
 }
 
-const NavPet = memo(function NavPet({ petType = 'panda', petVariant, navVisible = true, paused = false, onPress }) {
+const NavPet = memo(function NavPet({ 
+  petType = 'panda', 
+  petVariant, 
+  navVisible = true, 
+  paused = false, 
+  onPress,
+  onPositionChange
+}) {
   const typeMeta = PET_TYPES[petType] || PET_TYPES.panda
   const variant  = petVariant || typeMeta.defaultVariant
 
@@ -98,6 +105,9 @@ const NavPet = memo(function NavPet({ petType = 'panda', petVariant, navVisible 
         }
         if (stepsRef.current > 120 && Math.random() < 0.009) teleport()
 
+        // Avisar del cambio de posición y dirección
+        onPositionChange?.({ x: next, facingR: facingRef.current }) 
+        
         return next
       })
     }, 125)

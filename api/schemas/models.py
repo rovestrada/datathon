@@ -56,8 +56,15 @@ class ChatMessageRequest(BaseModel):
     user_id: str
     session_id: str
     message: str
+    current_screen: str = "inicio"
+
+
+class NavigationAction(BaseModel):
+    screen: str
+    label: str
 
 
 class ChatMessageResponse(BaseModel):
     reply: str
     session_id: str
+    navigation_action: NavigationAction | None = None
