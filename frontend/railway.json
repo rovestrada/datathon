@@ -1,11 +1,7 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "npm install && npm run build"
-  },
-  "deploy": {
-    "startCommand": "npx serve dist -s -l $PORT",
-    "staticDir": "dist"
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
   }
 }
