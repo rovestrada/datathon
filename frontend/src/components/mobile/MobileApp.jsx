@@ -37,6 +37,16 @@ const NAV_TABS = [
   { id: 'buzon',  label: 'Buzón',  icon: Inbox, badge: 3 },
 ]
 
+// Random notification messages for the pet
+const PET_NOTIFICATIONS = [
+  '¡Hola! ¿Necesitas ayuda con tus finanzas?',
+  'Tengo un consejo financiero para ti 💡',
+  '¿Dudas? Estoy aquí para ayudarte',
+  'Revisa tus gastos recientes',
+  '¿Quieres transferir dinero? Pregúntame cómo',
+  '¡No olvides revisar tu Buzón! 📬',
+]
+
 export default function MobileApp() {
   const { isAuthenticated, customerId, token, chatOpenData } = useAuth()
   const { petEnabled, petType, petVariant, applyArchetypeDefault } = usePet()
@@ -46,6 +56,8 @@ export default function MobileApp() {
   const [petPaused, setPetPaused] = useState(false)
   const [petX, setPetX] = useState(40)
   const [petFacingR, setPetFacingR] = useState(true)
+  const [notification, setNotification] = useState(null)
+  const [notifMsgIdx, setNotifMsgIdx] = useState(0)
 
   const handlePetMove = (data) => {
     // Si data es un objeto (v2), extraemos campos. Si es solo número (compat), actualizamos solo X.
@@ -57,12 +69,38 @@ export default function MobileApp() {
     }
   }
 
+  const dismissNotification = () => setNotification(null)
+
   // Cuando llega el perfil tras el login (vía chatOpenData), aplicar mascota default
   useEffect(() => {
     if (chatOpenData?.archetype_name) {
       applyArchetypeDefault(chatOpenData.archetype_name)
     }
   }, [chatOpenData, applyArchetypeDefault])
+
+  // Dismiss any active notification when screen changes
+  useEffect(() => { setNotification(null) }, [screen])
+
+  // Schedule periodic pet notifications (only on non-full screens)
+  useEffect(() => {
+    if (!isAuthenticated) return
+    const schedule = () => {
+      const delay = 30000 + Math.random() * 10000
+      return setTimeout(() => {
+        setNotifMsgIdx(i => {
+          const next = (i + 1) % PET_NOTIFICATIONS.length
+          setNotification(PET_NOTIFICATIONS[next])
+          return next
+        })
+        // Auto-dismiss after 5 s
+        const dismiss = setTimeout(() => setNotification(null), 5000)
+        timer = schedule()
+        return () => clearTimeout(dismiss)
+      }, delay)
+    }
+    let timer = schedule()
+    return () => clearTimeout(timer)
+  }, [isAuthenticated])
 
   // Pause pet whenever entering a free screen; bubble dismiss will unpause
   useEffect(() => {
@@ -143,7 +181,7 @@ export default function MobileApp() {
           transition={{ duration: 0.22, ease: 'easeOut' }}
           style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
         >
-          {screen === 'inicio'     && <MobileHome customerId={customerId} onGoToSettings={() => goTo('ajustes')} onGoToHealth={() => goTo('salud')} onGoToStatement={() => goTo('estado')} />}
+          {screen === 'inicio'     && <MobileHome customerId={customerId} onGoToSettings={() => goTo('ajustes')} onGoToHealth={() => goTo('salud')} onGoToStatement={() => goTo('estado')} onNavigate={goTo} />}
           {screen === 'pagos'      && <MobilePagos onBack={goBack} />}
           {screen === 'transferir' && <MobileTransferir customerId={customerId} onBack={goBack} />}
           {screen === 'buzon'      && <MobileBuzon onBack={goBack} />}
@@ -176,10 +214,69 @@ export default function MobileApp() {
           petVariant={petVariant}
           navVisible={petNavVisible}
           paused={isFreeScreen && petPaused}
-          onPress={() => goTo('havi')}
+          notification={!showBottomNav ? notification : null}
+          onNotificationDismiss={dismissNotification}
+          onPress={() => { dismissNotification(); goTo('havi') }}
           onPositionChange={handlePetMove}
         />
       )}
+
+      {/* Notification bubble anchored to center HAVI nav button (when nav visible + pet disabled) */}
+      <AnimatePresence>
+        {notification && showBottomNav && !isFullScreen && !petEnabled && (
+          <motion.div
+            key="notif-nav"
+            initial={{ opacity: 0, y: 8, scale: 0.88 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.88 }}
+            transition={{ duration: 0.15 }}
+            onClick={() => { dismissNotification(); goTo('havi') }}
+            style={{
+              position:     'fixed',
+              bottom:       '148px',
+              left:         '50%',
+              transform:    'translateX(-50%)',
+              zIndex:       55,
+              width:        '180px',
+              background:   '#fff',
+              color:        '#111',
+              border:       '2px solid #111',
+              borderRadius: '10px',
+              padding:      '8px 10px',
+              fontSize:     '11px',
+              fontFamily:   '"Courier New", Courier, monospace',
+              fontWeight:   'bold',
+              textAlign:    'center',
+              lineHeight:   '1.4',
+              wordBreak:    'break-word',
+              cursor:       'pointer',
+            }}
+          >
+            {notification}
+            {/* Tail pointing down toward HAVI button */}
+            <span style={{
+              position:    'absolute',
+              bottom:      '-10px',
+              left:        '50%',
+              transform:   'translateX(-50%)',
+              width:       0, height: 0,
+              borderTop:   '8px solid #111',
+              borderRight: '7px solid transparent',
+              borderLeft:  '7px solid transparent',
+            }} />
+            <span style={{
+              position:    'absolute',
+              bottom:      '-6px',
+              left:        '50%',
+              transform:   'translateX(-50%)',
+              width:       0, height: 0,
+              borderTop:   '6px solid #fff',
+              borderRight: '5px solid transparent',
+              borderLeft:  '5px solid transparent',
+            }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* HAVI corner logo when pet is disabled on non-home sections */}
       {showHAVICorner && (
@@ -187,7 +284,7 @@ export default function MobileApp() {
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
-          onClick={() => goTo('havi')}
+          onClick={() => { dismissNotification(); goTo('havi') }}
           style={{
             position: 'fixed', bottom: '20px', right: '16px',
             width: '52px', height: '52px', borderRadius: '50%',
@@ -203,6 +300,60 @@ export default function MobileApp() {
           <HaviLogo size={32} />
         </motion.button>
       )}
+
+      {/* Notification bubble anchored to corner HAVI button (when pet disabled, no nav) */}
+      <AnimatePresence>
+        {notification && !petEnabled && !showBottomNav && !isFullScreen && (
+          <motion.div
+            key="notif-corner"
+            initial={{ opacity: 0, x: 10, scale: 0.88 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 10, scale: 0.88 }}
+            transition={{ duration: 0.15 }}
+            onClick={() => { dismissNotification(); goTo('havi') }}
+            style={{
+              position:     'fixed',
+              bottom:       '84px',
+              right:        '16px',
+              zIndex:       55,
+              width:        '170px',
+              background:   '#fff',
+              color:        '#111',
+              border:       '2px solid #111',
+              borderRadius: '10px',
+              padding:      '8px 10px',
+              fontSize:     '11px',
+              fontFamily:   '"Courier New", Courier, monospace',
+              fontWeight:   'bold',
+              textAlign:    'center',
+              lineHeight:   '1.4',
+              wordBreak:    'break-word',
+              cursor:       'pointer',
+            }}
+          >
+            {notification}
+            {/* Tail pointing down-right toward corner button */}
+            <span style={{
+              position:    'absolute',
+              bottom:      '-10px',
+              right:       '18px',
+              width:       0, height: 0,
+              borderTop:   '8px solid #111',
+              borderRight: '7px solid transparent',
+              borderLeft:  '7px solid transparent',
+            }} />
+            <span style={{
+              position:    'absolute',
+              bottom:      '-6px',
+              right:       '20px',
+              width:       0, height: 0,
+              borderTop:   '6px solid #fff',
+              borderRight: '5px solid transparent',
+              borderLeft:  '5px solid transparent',
+            }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Bottom nav — on all 4 main tabs */}
       {showBottomNav && (
@@ -237,7 +388,11 @@ export default function MobileApp() {
               }}
               aria-label="HAVI"
             >
-              <span style={{ fontSize: '11px', fontWeight: 700, color: 'white', letterSpacing: '0.5px' }}>HAVI</span>
+              {petEnabled ? (
+                <img src="/Home.svg" width={26} height={26} alt="HAVI" style={{ filter: 'brightness(0) invert(1)', display: 'block' }} />
+              ) : (
+                <span style={{ fontSize: '11px', fontWeight: 700, color: 'white', letterSpacing: '0.5px' }}>HAVI</span>
+              )}
             </motion.button>
           </div>
 

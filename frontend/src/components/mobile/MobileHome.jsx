@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, EyeOff, SlidersHorizontal, User, ChevronRight } from 'lucide-react'
+import { Eye, EyeOff, Menu, User, ChevronRight } from 'lucide-react'
 import { usePet } from '../../context/PetContext'
 import { getGifUrl } from './petSprites'
+import MobileSidebar from './MobileSidebar'
 
 const BALANCE = 96.84
 
@@ -226,9 +227,10 @@ function CardPreview({ petType, petVariant, cardSkin }) {
   )
 }
 
-export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, onGoToStatement }) {
+export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, onGoToStatement, onNavigate }) {
   const { petType, petVariant, cardSkin } = usePet()
   const [balanceHidden, setBalanceHidden] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
     <div style={{
@@ -236,6 +238,12 @@ export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, o
       background: '#0a0a12',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     }}>
+      <MobileSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        currentScreen="inicio"
+        onNavigate={id => { onNavigate?.(id) }}
+      />
       {/* Top bar */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 20,
@@ -250,8 +258,8 @@ export default function MobileHome({ customerId, onGoToSettings, onGoToHealth, o
           </span>
         </div>
         <div style={{ display: 'flex', gap: '16px' }}>
-          <button onClick={onGoToHealth} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}>
-            <SlidersHorizontal size={22} color="white" />
+          <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}>
+            <Menu size={22} color="white" />
           </button>
           <button onClick={onGoToSettings} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}>
             <User size={22} color="white" />
