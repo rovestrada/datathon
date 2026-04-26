@@ -69,3 +69,4 @@ class ChatMessageResponse(BaseModel):
     reply: str
     session_id: str
     navigation_action: NavigationAction | None = None
+    quick_replies: list[str] | None = None

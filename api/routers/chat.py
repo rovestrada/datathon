@@ -50,13 +50,14 @@ def chat_message(
     la memoria estructurada extraída de la conversación.
     """
     _resolve_token(authorization)
-    reply, nav_action = get_chat_reply(
+    reply, nav_action, quick_replies = get_chat_reply(
         req.user_id, req.session_id, req.message, req.current_screen
     )
     return ChatMessageResponse(
         reply=reply,
         session_id=req.session_id,
         navigation_action=nav_action,
+        quick_replies=quick_replies,
     )
 
 

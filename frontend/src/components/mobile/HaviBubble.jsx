@@ -19,8 +19,18 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', 
     cards:      'Tu tarjeta está lista para usarse 💳',
   }
 
+  const SCREEN_CTAS = {
+    salud:      ['Ver mi score', '¿Cómo mejorar?', 'Ahora no'],
+    estado:     ['Ver movimientos', 'Descargar estado', 'Ahora no'],
+    pagos:      ['Sí, revísalas', 'Ver mis pagos', 'Ahora no'],
+    transferir: ['Nueva transferencia', 'Mis contactos', 'Ahora no'],
+    buzon:      ['Ver el aviso', 'Ignorar', 'Ahora no'],
+    cards:      ['Ver mi tarjeta', 'Activar tarjeta', 'Ahora no'],
+  }
+
   const screenData = screenCache[screen]
   const message = screenData?.havi_context_short ?? SCREEN_MESSAGES[screen] ?? '¡Hola! 👋'
+  const ctas = SCREEN_CTAS[screen] ?? null
 
   const BUBBLE_W  = 180
   const PET_W     = 64
@@ -72,7 +82,7 @@ export default function HaviBubble({ screen, onOpenHAVI, bottomOffset = '88px', 
         >
           {/* Bubble body */}
           <div
-            onClick={() => onOpenHAVI?.(message)}
+            onClick={() => onOpenHAVI?.({ message, ctas })}
             style={{
               background: 'white',
               border: '2px solid black',

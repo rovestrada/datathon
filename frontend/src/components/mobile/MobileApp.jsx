@@ -66,6 +66,7 @@ export default function MobileApp() {
   const [screen, setScreen] = useState('inicio')
   const [prevScreen, setPrevScreen] = useState(null)
   const [haviOpenMsg, setHaviOpenMsg] = useState(null)
+  const [haviOpenCtas, setHaviOpenCtas] = useState(null)
   const [petPaused, setPetPaused] = useState(false)
   const [petX, setPetX] = useState(40)
   const [petFacingR, setPetFacingR] = useState(true)
@@ -97,6 +98,7 @@ export default function MobileApp() {
       setScreen('inicio')
       setPrevScreen(null)
       setHaviOpenMsg(null)
+      setHaviOpenCtas(null)
     }
   }, [isAuthenticated])
 
@@ -165,7 +167,7 @@ export default function MobileApp() {
     navigateTo(s)
     loadScreenData(s)
     // Limpiar mensaje de burbuja al navegar fuera de havi
-    if (s !== 'havi') setHaviOpenMsg(null)
+    if (s !== 'havi') { setHaviOpenMsg(null); setHaviOpenCtas(null) }
   }
   const goBack = () => { 
     const s = prevScreen || 'inicio'
@@ -214,7 +216,7 @@ export default function MobileApp() {
           {screen === 'transferir' && <MobileTransferir customerId={customerId} onBack={goBack} />}
           {screen === 'buzon'      && <MobileBuzon onBack={goBack} />}
           {screen === 'cards'      && <MobileCards onBack={goBack} />}
-          {screen === 'havi'       && <MobileHAVI customerId={customerId} userName={userName} token={token} chatOpenData={chatOpenData} petEnabled={petEnabled} petType={petType} petVariant={petVariant} originScreen={prevScreen || 'inicio'} bubbleOpenMessage={haviOpenMsg} onBack={goBack} onNavigate={goTo} />}
+          {screen === 'havi'       && <MobileHAVI customerId={customerId} userName={userName} token={token} chatOpenData={chatOpenData} petEnabled={petEnabled} petType={petType} petVariant={petVariant} originScreen={prevScreen || 'inicio'} bubbleOpenMessage={haviOpenMsg} bubbleOpenCtas={haviOpenCtas} onBack={goBack} onNavigate={goTo} />}
           {screen === 'ajustes'    && <MobileSettings onBack={goBack} onNavigate={goTo} />}
           {screen === 'salud'      && <MobileFinancialHealth onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
           {screen === 'estado'     && <MobileStatement onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
@@ -227,7 +229,7 @@ export default function MobileApp() {
       {showBubble && !notification && (
         <HaviBubble
           screen={screen}
-          onOpenHAVI={(msg) => { setHaviOpenMsg(msg || null); goTo('havi') }}
+          onOpenHAVI={({ message, ctas } = {}) => { setHaviOpenMsg(message || null); setHaviOpenCtas(ctas || null); goTo('havi') }}
           bottomOffset={isNavScreen ? '88px' : '82px'}
           thoughtBubble={thoughtBubble && petEnabled}
           onShow={() => setPetPaused(true)}

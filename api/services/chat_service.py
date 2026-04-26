@@ -487,14 +487,22 @@ INSTRUCCIONES:
 - NAVEGACIÓN — reglas estrictas:
   Incluye [NAV:{{"screen":"id","label":"texto"}}] SOLO si se cumplen LAS DOS condiciones:
   1. El usuario dice EXPLÍCITAMENTE que quiere ir a otra sección con palabras como
-     "quiero ver", "llévame", "muéstrame", "ir a", "abre", "navegar", "ir a", "mostrar".
+     "quiero ver", "llévame", "muéstrame", "ir a", "abre", "navegar", "mostrar".
      Preguntar sobre un tema NO es suficiente — solo una solicitud directa de ir cuenta.
   2. La pantalla destino es DIFERENTE a la pantalla actual ({current_screen}).
   Si no se cumplen ambas condiciones, NO incluyas NAV. Omite el token completamente.
   El label debe ser específico: "Ver mis tarjetas", "Ir a Pagos", "Ver movimientos".
-  Máximo 1 NAV por respuesta.
+  Máximo 1 NAV por respuesta. NO uses NAV y QR en la misma respuesta.
+- QUICK REPLIES — sugerencias de seguimiento opcionales:
+  Si tu respuesta abre 2 o 3 caminos naturales de exploración, añade al final:
+  [QR:["opción 1","opción 2","opción 3"]]
+  Úsalos cuando el usuario podría querer profundizar pero no ha pedido nada concreto.
+  Deben ser preguntas/acciones cortas (máximo 30 chars cada una) y específicas al contexto.
+  Ejemplos válidos tras explicar el score: ["¿Cómo lo subo?","¿Qué afecta mi score?","Ver mis gastos"]
+  NO los uses si el usuario ya pidió algo específico. NO los uses junto con NAV.
+  Máximo 3 opciones. Si no hay seguimiento natural obvio, omite el token.
 - Respuestas cortas: máximo 3-4 oraciones. El usuario está en su teléfono.
-- SOLO texto plano antes del NAV. Sin markdown, sin asteriscos."""
+- SOLO texto plano antes de los tokens. Sin markdown, sin asteriscos."""
 
 
 # ── Main function ────────────────────────────────────────────────────────────
@@ -504,10 +512,10 @@ def get_chat_reply(
     session_id: str,
     message: str,
     current_screen: str = "inicio",
-) -> tuple[str, dict | None]:
+) -> tuple[str, dict | None, list[str] | None]:
     profile = get_profile(user_id)
     if not profile:
-        return ("Lo siento, no pude encontrar tu información. Intenta cerrar sesión y volver a entrar.", None)
+        return ("Lo siento, no pude encontrar tu información. Intenta cerrar sesión y volver a entrar.", None, None)
 
     _init_session(session_id, user_id, current_screen)
     memory = _user_memory[session_id]
@@ -560,7 +568,7 @@ def get_chat_reply(
         )
     except Exception as e:
         print(f"[chat_service] Error Anthropic: {e}")
-        return ("Havi está teniendo problemas técnicos en este momento. Intenta de nuevo.", None)
+        return ("Havi está teniendo problemas técnicos en este momento. Intenta de nuevo.", None, None)
 
     raw_reply = response.content[0].text
 
@@ -574,14 +582,25 @@ def get_chat_reply(
         except Exception:
             pass
 
-    # Añadir respuesta al historial
+    # Extraer quick_replies del token [QR:[...]]
+    quick_replies = None
+    qr_match = re.search(r'\[QR:(\[.*?\])\]', raw_reply, re.DOTALL)
+    if qr_match:
+        try:
+            items = json.loads(qr_match.group(1))
+            quick_replies = [str(i).strip() for i in items if str(i).strip()][:3]
+            raw_reply = raw_reply[:qr_match.start()].strip()
+        except Exception:
+            pass
+
+    # Añadir respuesta al historial (sin los tokens)
     _sessions[session_id].append({"role": "assistant", "content": raw_reply})
 
     # Ventana deslizante — truncar DESPUÉS de extraer la memoria
     if len(_sessions[session_id]) > MAX_HISTORY_MESSAGES:
         _sessions[session_id] = _sessions[session_id][-MAX_HISTORY_MESSAGES:]
 
-    return (raw_reply, nav_action)
+    return (raw_reply, nav_action, quick_replies)
 
 
 # ── Utilities ────────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ function now() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-export default function MobileHAVI({ customerId, userName, token, chatOpenData, petEnabled, petType, petVariant, originScreen = 'inicio', bubbleOpenMessage = null, onBack, onNavigate }) {
+export default function MobileHAVI({ customerId, userName, token, chatOpenData, petEnabled, petType, petVariant, originScreen = 'inicio', bubbleOpenMessage = null, bubbleOpenCtas = null, onBack, onNavigate }) {
   const sessionId = useRef(crypto.randomUUID())
   const [ctasDone, setCtasDone] = useState(false)
 
@@ -68,14 +68,13 @@ export default function MobileHAVI({ customerId, userName, token, chatOpenData, 
         }),
       })
       const data = await res.json()
-      
-      // Si el backend sugiere una navegación, la guardamos temporalmente en el mensaje
-      setMessages(prev => [...prev, { 
-        id: msgId++, 
-        from: 'bot', 
+      setMessages(prev => [...prev, {
+        id: msgId++,
+        from: 'bot',
         ts: now(),
         text: res.ok ? data.reply : 'Lo siento, tuve un problema técnico.',
-        navAction: data.navigation_action // ← Guardar acción
+        navAction: data.navigation_action ?? null,
+        quickReplies: (res.ok && data.quick_replies?.length) ? data.quick_replies : null,
       }])
     } catch {
       setMessages(prev => [...prev, { 
@@ -199,18 +198,36 @@ export default function MobileHAVI({ customerId, userName, token, chatOpenData, 
             </motion.div>
 
             {/* CTAs bajo el primer mensaje */}
-            {i === 0 && !ctasDone && chatOpenData?.ctas && (
-              <div style={{ 
-                display:'flex', flexWrap:'wrap', gap:'8px', 
-                marginBottom: '20px', paddingLeft: '4px' 
+            {i === 0 && !ctasDone && (bubbleOpenCtas || chatOpenData?.ctas) && (
+              <div style={{
+                display:'flex', flexWrap:'wrap', gap:'8px',
+                marginBottom: '20px', paddingLeft: '4px'
               }}>
-                {chatOpenData.ctas.map(cta => (
+                {(bubbleOpenCtas ?? chatOpenData.ctas).map(cta => (
                   <button key={cta} onClick={() => send(cta)} style={{
                     padding:'8px 16px', borderRadius:'20px', fontSize:'13px', cursor:'pointer',
                     background: cta === 'Ahora no' ? 'transparent' : 'rgba(167,139,250,0.15)',
                     color: cta === 'Ahora no' ? '#9ca3af' : '#a78bfa',
                     border: `1px solid ${cta === 'Ahora no' ? '#333' : '#a78bfa55'}`,
                   }}>{cta}</button>
+                ))}
+              </div>
+            )}
+
+            {/* Quick replies bajo el último mensaje del bot */}
+            {msg.from === 'bot' && i === messages.length - 1 && !isTyping && msg.quickReplies?.length > 0 && (
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', gap: '8px',
+                marginBottom: '16px', paddingLeft: '4px',
+              }}>
+                {msg.quickReplies.map(qr => (
+                  <button key={qr} onClick={() => send(qr)} style={{
+                    padding: '7px 15px', borderRadius: '20px', fontSize: '13px', cursor: 'pointer',
+                    background: 'rgba(167,139,250,0.12)',
+                    color: '#a78bfa',
+                    border: '1px solid #a78bfa44',
+                    transition: 'background 0.15s',
+                  }}>{qr}</button>
                 ))}
               </div>
             )}
