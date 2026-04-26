@@ -1,28 +1,8 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Send, Loader2 } from 'lucide-react'
+import { X, Send, Loader2, Landmark } from 'lucide-react'
 import HaviLogo from './HaviLogo'
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const BOT_RESPONSES = [
-  'Entendido. ¿En qué más puedo ayudarte?',
-  'Excelente pregunta. Puedo ayudarte con transferencias, saldos y más.',
-  'Tu saldo disponible es $96.84 MXN. ¿Deseas más información?',
-  'Recomiendo revisar tus movimientos recientes para identificar gastos.',
-  'Para transferir dinero ve a la sección Transferencias del menú.',
-  'Tu ahorro inmediato está generando un rendimiento del 5%. ¡Bien hecho!',
-  'Puedo ayudarte a programar pagos automáticos. ¿Te interesa?',
-  'Recuerda que tu Cuenta Hey no tiene comisiones por mantenimiento.',
-  'Tu ahorro acumulado es $24.10 MXN. ¡Sigue adelante!',
-]
-
-const WELCOME_MESSAGE = (customerId) => ({
-  id: 'welcome',
-  from: 'bot',
-  text: `¡Hola, Usuario #${customerId}! Soy HAVI, tu asistente financiero inteligente de hey, banco. ¿En qué puedo ayudarte hoy?`,
-  ts: Date.now(),
-})
+import React from 'react'
 
 let msgCounter = 1
 
@@ -102,8 +82,14 @@ function MessageBubble({ msg }) {
 
 // ─── Chatbot panel ────────────────────────────────────────────────────────────
 
-const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId }) {
-  const [messages, setMessages] = useState(() => [WELCOME_MESSAGE(customerId)])
+const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId, token, chatOpenData }) {
+  const sessionId = useRef(crypto.randomUUID())
+  const [ctasDone, setCtasDone] = useState(false)
+  const [messages, setMessages] = useState(() => [{
+    id: 'welcome', from: 'bot', ts: Date.now(),
+    text: chatOpenData?.opening_message
+      ?? `¡Hola, Usuario #${customerId}! Soy HAVI. ¿En qué puedo ayudarte?`,
+  }])
   const [input, setInput]       = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef          = useRef(null)
@@ -117,22 +103,47 @@ const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId }) {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 300)
   }, [isOpen])
 
-  const sendMessage = useCallback(() => {
-    const text = input.trim()
-    if (!text) return
+  const sendMessage = useCallback(async (textOverride) => {
+    const text = (typeof textOverride === 'string' ? textOverride : input).trim()
+    if (!text || isTyping) return
 
-    const userMsg = { id: msgCounter++, from: 'user', text, ts: Date.now() }
-    setMessages(prev => [...prev, userMsg])
+    setMessages(prev => [...prev, { id: msgCounter++, from: 'user', text, ts: Date.now() }])
     setInput('')
     setIsTyping(true)
+    setCtasDone(true)
 
-    const delay = 350 + Math.random() * 500
-    setTimeout(() => {
-      const botText = BOT_RESPONSES[Math.floor(Math.random() * BOT_RESPONSES.length)]
+    try {
+      const res = await fetch('/api/chat/message', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          user_id: customerId, 
+          session_id: sessionId.current, 
+          message: text,
+          current_screen: 'dashboard'
+        }),
+      })
+      const data = await res.json()
+      setMessages(prev => [...prev, { 
+        id: msgCounter++, 
+        from: 'bot', 
+        ts: Date.now(),
+        text: res.ok ? data.reply : 'Tuve un problema técnico. Intenta de nuevo.' 
+      }])
+    } catch {
+      setMessages(prev => [...prev, { 
+        id: msgCounter++, 
+        from: 'bot', 
+        ts: Date.now(),
+        text: 'Sin conexión con el servidor.' 
+      }])
+    } finally {
       setIsTyping(false)
-      setMessages(prev => [...prev, { id: msgCounter++, from: 'bot', text: botText, ts: Date.now() }])
-    }, delay)
-  }, [input])
+    }
+  }, [input, isTyping, customerId, token])
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -191,7 +202,24 @@ const ChatbotHAVI = memo(function ChatbotHAVI({ isOpen, onClose, customerId }) {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-              {messages.map(msg => <MessageBubble key={msg.id} msg={msg} />)}
+              {messages.map((msg, i) => (
+                <React.Fragment key={msg.id}>
+                  <MessageBubble msg={msg} />
+                  {i === 0 && !ctasDone && chatOpenData?.ctas && (
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:'7px', paddingLeft:'42px' }}>
+                      {chatOpenData.ctas.map(cta => (
+                        <button key={cta} onClick={() => sendMessage(cta)} style={{
+                          padding:'6px 13px', borderRadius:'20px', fontSize:'12.5px', cursor:'pointer',
+                          border:'1.5px solid',
+                          background: cta === 'Ahora no' ? 'transparent' : 'rgba(167,139,250,0.12)',
+                          color: cta === 'Ahora no' ? '#6b7280' : '#a78bfa',
+                          borderColor: cta === 'Ahora no' ? '#333' : '#a78bfa55',
+                        }}>{cta}</button>
+                      ))}
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
               {isTyping && <BotTyping />}
               <div ref={messagesEndRef} />
             </div>

@@ -49,7 +49,7 @@ class ChatOpenResponse(BaseModel):
     trigger_id: str
     opening_message: str
     ctas: list[str]
-    pet_skin: str
+    archetype_name: str
 
 
 class ChatMessageRequest(BaseModel):

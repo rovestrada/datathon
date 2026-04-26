@@ -5,7 +5,7 @@ import { PET_TYPES, getGifUrl, getIconUrl } from './petSprites'
 import { usePet } from '../../context/PetContext'
 
 export default function MobilePetCustomization({ onBack }) {
-  const { petEnabled, petType, petVariant, update } = usePet()
+  const { petEnabled, petType, petVariant, setPetEnabled, setUserPet } = usePet()
 
   const typeMeta     = PET_TYPES[petType] || PET_TYPES.panda
   const defaultVar   = typeMeta.defaultVariant
@@ -21,7 +21,8 @@ export default function MobilePetCustomization({ onBack }) {
   }
 
   function save() {
-    update({ petEnabled: draftEnabled, petType: draftType, petVariant: draftVariant })
+    setPetEnabled(draftEnabled)
+    setUserPet(draftType, draftVariant)
     onBack()
   }
 

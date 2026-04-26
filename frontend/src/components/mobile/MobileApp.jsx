@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Home, CreditCard, ArrowLeftRight, Inbox } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { usePet } from '../../context/PetContext'
+import { useScreen } from '../../context/ScreenContext'
 
 import MobileLogin from './MobileLogin'
 import MobileHome from './MobileHome'
@@ -31,19 +32,36 @@ const NAV_TABS = [
 ]
 
 export default function MobileApp() {
-  const { isAuthenticated, customerId } = useAuth()
-  const { petEnabled, petType, petVariant } = usePet()
+  const { isAuthenticated, customerId, token, chatOpenData } = useAuth()
+  const { petEnabled, petType, petVariant, applyArchetypeDefault } = usePet()
+  const { navigateTo } = useScreen()
   const [screen, setScreen] = useState('inicio')
   const [prevScreen, setPrevScreen] = useState(null)
   const [petPaused, setPetPaused] = useState(false)
+
+  // Cuando llega el perfil tras el login (vía chatOpenData), aplicar mascota default
+  useEffect(() => {
+    if (chatOpenData?.archetype_name) {
+      applyArchetypeDefault(chatOpenData.archetype_name)
+    }
+  }, [chatOpenData, applyArchetypeDefault])
 
   // Pause pet whenever entering a free screen; bubble dismiss will unpause
   useEffect(() => {
     if (FREE_SCREENS.includes(screen)) setPetPaused(true)
   }, [screen])
 
-  const goTo = (s) => { setPrevScreen(screen); setScreen(s) }
-  const goBack = () => { setScreen(prevScreen || 'inicio'); setPrevScreen(null) }
+  const goTo = (s) => { 
+    setPrevScreen(screen)
+    setScreen(s)
+    navigateTo(s) 
+  }
+  const goBack = () => { 
+    const s = prevScreen || 'inicio'
+    setScreen(s)
+    setPrevScreen(null)
+    navigateTo(s)
+  }
 
   // Visibility logic
   const isNavScreen   = NAV_SCREENS.includes(screen)    // has bottom nav bar
@@ -83,7 +101,7 @@ export default function MobileApp() {
           {screen === 'pagos'      && <MobilePagos onBack={goBack} />}
           {screen === 'transferir' && <MobileTransferir customerId={customerId} onBack={goBack} />}
           {screen === 'buzon'      && <MobileBuzon onBack={goBack} />}
-          {screen === 'havi'       && <MobileHAVI customerId={customerId} onBack={goBack} />}
+          {screen === 'havi'       && <MobileHAVI customerId={customerId} token={token} chatOpenData={chatOpenData} onBack={goBack} />}
           {screen === 'ajustes'    && <MobileSettings onBack={goBack} onNavigate={goTo} />}
           {screen === 'salud'      && <MobileFinancialHealth onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
           {screen === 'estado'     && <MobileStatement onBack={goBack} onOpenHAVI={() => goTo('havi')} />}
