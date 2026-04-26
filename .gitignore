@@ -1,2 +1,22 @@
+# Datasets & Archives
 *.parquet
 *.csv
+*.zip
+*.tar.gz
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.env
+
+# Node / Frontend
+node_modules/
+.vite/
+dist/
+
+# OS
+.DS_Store
